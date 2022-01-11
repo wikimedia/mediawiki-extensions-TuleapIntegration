@@ -1,0 +1,42 @@
+{
+	"name": "TuleapIntegration",
+	"version": "",
+	"license-name": "GPL-3.0-only",
+	"author": [
+		"[http://www.hallowelt.com Hallo Welt! GmbH]"
+	],
+	"url": "http://www.hallowelt.com",
+	"descriptionmsg": "tuleapintegration-desc",
+	"requires": {
+		"MediaWiki": ">= 1.35.0"
+	},
+	"MessagesDirs": {
+		"TuleapIntegration": "i18n"
+	},
+	"AutoloadNamespaces": {
+		"TuleapIntegration\\": "src/",
+		"TuleapIntegration\\Tests\\": "tests/phpunit"
+	},
+	"ResourceModules": {
+		"ext.tuleapIntegration": {
+			"scripts": [
+				"ext.tuleapIntegration.js"
+			],
+			"styles": [
+				"ext.tuleapIntegration.less"
+			]
+		},
+		"ext.tuleapIntegration.styles": {
+			"styles": [
+				"ext.tuleapIntegration.static.less"
+			]
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "resources",
+		"remoteExtPath": "TuleapIntegration/resources"
+	},
+	"Hooks": {
+	},
+	"manifest_version": 2
+}

@@ -1,0 +1,10 @@
+{
+	"name": "mediawiki/tuleap-integration",
+	"type": "mediawiki-extension",
+	"extra": {
+		"installer-name": "TuleapIntegration"
+	},
+	"require": {
+		"composer/installers": "~1.0"
+	}
+}
