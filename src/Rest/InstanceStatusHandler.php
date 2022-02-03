@@ -4,7 +4,6 @@ namespace TuleapIntegration\Rest;
 
 use MediaWiki\Rest\Handler;
 use MediaWiki\Rest\HttpException;
-use TuleapIntegration\InstanceEntity;
 use TuleapIntegration\InstanceManager;
 use Wikimedia\ParamValidator\ParamValidator;
 
@@ -22,24 +21,14 @@ class InstanceStatusHandler extends Handler {
 		}
 
 		$store = $this->manager->getStore();
-		if ( $store->instanceExists( $params['name'] ) ) {
-			throw new HttpException( "Exists" );
+		$entity = $store->getInstanceEntity( $params['name'] );
+		if ( !$entity ) {
+			throw new HttpException( 'Instance ' . $params['name'] . ' does not exist', 404 );
 		}
-		$entity = $store->getNewInstance( $params['name'] );
 
-		$res = $store->storeEntity( $entity );
-		error_log( "SAVING: " . $res );
-
-		$entity->setDatabaseName( 'sf_test' );
-		$store->storeEntity( $entity );
-
-		$entity->setStatus( InstanceEntity::STATE_READY );
-		$store->storeEntity( $entity );
-
-
-		return $this->getResponseFactory()->createJson(
-			[ "t" => $entity->getId() ]
-		);
+		return $this->getResponseFactory()->createJson( [
+			'status' => $entity->getStatus()
+		] );
 	}
 
 	public function getParamSettings() {

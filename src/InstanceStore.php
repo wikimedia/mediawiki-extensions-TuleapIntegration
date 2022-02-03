@@ -12,7 +12,7 @@ class InstanceStore {
 		'ti_name',
 		'ti_directory',
 		'ti_status',
-		'ti_created_on',
+		'ti_created_at',
 		'ti_script_path',
 		'ti_database',
 		'ti_data'
@@ -25,9 +25,11 @@ class InstanceStore {
 	}
 
 	public function getInstanceEntity( $name ): ?InstanceEntity {
-		return $this->entityFromRow(
-			$this->query( [ 'ti_name' => $name ], true )
-		);
+		$entities = $this->query( [ 'ti_name' => $name ] );
+		if ( !empty( $entities ) ) {
+			return $entities[0];
+		}
+		return null;
 	}
 
 	public function instanceExists( $name ): bool {
@@ -70,7 +72,7 @@ class InstanceStore {
 	public function query( array $conditions, $raw = false ): array {
 		$res = $this->loadBalancer->getConnection( DB_REPLICA )->select(
 			static::TABLE,
-			[ '*' ],
+			static::FIELDS,
 			$conditions,
 			__METHOD__
 		);
@@ -84,7 +86,10 @@ class InstanceStore {
 			if ( $raw ) {
 				$return[] = $row;
 			} else {
-				$return[] = $this->entityFromRow( $row );
+				$instance = $this->entityFromRow( $row );
+				if ( $instance ) {
+					$return[] = $instance;
+				}
 			}
 		}
 
@@ -97,7 +102,7 @@ class InstanceStore {
 
 	private function entityFromRow( $row ): ?InstanceEntity {
 		foreach ( static::FIELDS as $field ) {
-			if ( !isset( $row->$field ) ) {
+			if ( !property_exists( $row, $field ) ) {
 				return null;
 			}
 		}
