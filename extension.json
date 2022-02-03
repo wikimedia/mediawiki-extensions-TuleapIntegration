@@ -36,6 +36,17 @@
 		"localBasePath": "resources",
 		"remoteExtPath": "TuleapIntegration/resources"
 	},
+	"ServiceWiringFiles": [
+		"includes/ServiceWiring.php"
+	],
+	"Hooks": {
+		"LoadExtensionSchemaUpdates": "registerTable"
+	},
+	"HookHandlers": {
+		"registerTable": {
+			"class": "TuleapIntegration\\Hook\\RegisterTable"
+		}
+	},
 	"RestRoutes": [
 		{
 			"method": "POST",
@@ -47,6 +58,11 @@
 			"path": "/tuleap/process_status/{pid}",
 			"class": "TuleapIntegration\\Rest\\ProcessStatusHandler",
 			"services": [ "ProcessManager" ]
+		},
+		{
+			"path": "/tuleap/instance_status/{name}",
+			"class": "TuleapIntegration\\Rest\\InstanceStatusHandler",
+			"services": [ "InstanceManager" ]
 		}
 	],
 	"config":  {

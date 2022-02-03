@@ -3,20 +3,27 @@
 namespace TuleapIntegration\Rest;
 
 use MediaWiki\Rest\Handler;
+use MediaWiki\Rest\HttpException;
 use MWStake\MediaWiki\Component\ProcessManager\ManagedProcess;
 use MWStake\MediaWiki\Component\ProcessManager\ProcessManager;
+use TuleapIntegration\InstanceManager;
 use TuleapIntegration\ProcessStep\CreateInstanceVault;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class CreateInstanceHandler extends Handler {
-	private $manager;
+	private $processManager;
+	private $instanceManager;
 
-	public function __construct( ProcessManager $manager ) {
-		$this->manager = $manager;
+	public function __construct( ProcessManager $processManager, InstanceManager $instanceManager ) {
+		$this->processManager = $processManager;
+		$this->instanceManager = $instanceManager;
 	}
 
 	public function execute() {
 		$params = $this->getValidatedParams();
+		if ( !$this->instanceManager->checkInstanceNameValidity( $params['name'] ) ) {
+			throw new HttpException( 'Instance name is not valid', 422 );
+		}
 
 		$process = new ManagedProcess( [
 			'create-vault' => [
@@ -27,7 +34,7 @@ class CreateInstanceHandler extends Handler {
 		] );
 
 		return $this->getResponseFactory()->createJson( [
-			'pid' => $this->manager->startProcess( $process )
+			'pid' => $this->processManager->startProcess( $process )
 		] );
 	}
 
