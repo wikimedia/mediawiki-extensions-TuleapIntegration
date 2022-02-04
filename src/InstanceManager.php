@@ -17,4 +17,8 @@ class InstanceManager {
 		// TODO: Implement
 		return true;
 	}
+
+	public function isCreatable( string $name ) {
+		return $this->checkInstanceNameValidity( $name ) && !$this->getStore()->instanceExists( $name );
+	}
 }

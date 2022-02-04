@@ -52,7 +52,7 @@
 			"method": "POST",
 			"path": "/tuleap/create_instance/{name}",
 			"class": "TuleapIntegration\\Rest\\CreateInstanceHandler",
-			"services": [ "ProcessManager" ]
+			"services": [ "ProcessManager", "InstanceManager" ]
 		},
 		{
 			"path": "/tuleap/process_status/{pid}",

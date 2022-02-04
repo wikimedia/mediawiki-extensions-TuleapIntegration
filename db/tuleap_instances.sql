@@ -9,5 +9,3 @@ CREATE TABLE IF NOT EXISTS /*$wgDBprefix*/tuleap_instances (
     `ti_data` BLOB NULL DEFAULT '',
     PRIMARY KEY ( `ti_id` )
 );
-
-CREATE INDEX /*i*/ti_name ON /*_*/tuleap_instances (ti_name);

@@ -21,7 +21,7 @@ class InstanceStatusHandler extends Handler {
 		}
 
 		$store = $this->manager->getStore();
-		$entity = $store->getInstanceEntity( $params['name'] );
+		$entity = $store->getInstanceByName( $params['name'] );
 		if ( !$entity ) {
 			throw new HttpException( 'Instance ' . $params['name'] . ' does not exist', 404 );
 		}

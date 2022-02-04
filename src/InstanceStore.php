@@ -24,12 +24,14 @@ class InstanceStore {
 		$this->loadBalancer = $loadBalancer;
 	}
 
-	public function getInstanceEntity( $name ): ?InstanceEntity {
+	public function getInstanceByName( $name ): ?InstanceEntity {
 		$entities = $this->query( [ 'ti_name' => $name ] );
-		if ( !empty( $entities ) ) {
-			return $entities[0];
-		}
-		return null;
+		return empty( $entities ) ? null : $entities[0];
+	}
+
+	public function getInstanceById( int $id ): ?InstanceEntity {
+		$entities = $this->query( [ 'ti_id' => $id ] );
+		return empty( $entities ) ? null : $entities[0];
 	}
 
 	public function instanceExists( $name ): bool {

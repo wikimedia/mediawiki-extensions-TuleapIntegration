@@ -8,6 +8,7 @@ use MWStake\MediaWiki\Component\ProcessManager\ManagedProcess;
 use MWStake\MediaWiki\Component\ProcessManager\ProcessManager;
 use TuleapIntegration\InstanceManager;
 use TuleapIntegration\ProcessStep\CreateInstanceVault;
+use TuleapIntegration\ProcessStep\RegisterInstance;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class CreateInstanceHandler extends Handler {
@@ -21,15 +22,20 @@ class CreateInstanceHandler extends Handler {
 
 	public function execute() {
 		$params = $this->getValidatedParams();
-		if ( !$this->instanceManager->checkInstanceNameValidity( $params['name'] ) ) {
-			throw new HttpException( 'Instance name is not valid', 422 );
+		if ( !$this->instanceManager->isCreatable( $params['name'] ) ) {
+			throw new HttpException( 'Instance name not valid or instance exists', 422 );
 		}
 
 		$process = new ManagedProcess( [
+			'register-instance' => [
+				'class' => RegisterInstance::class,
+				'args' => [ $params['name'] ],
+				'services' => [ 'InstanceManager' ]
+			],
 			'create-vault' => [
 				'class' => CreateInstanceVault::class,
-				'args' => [ $params['name'] ],
-				'services' => [ 'MainConfig' ]
+				'args' => [],
+				'services' => [ 'MainConfig', 'InstanceManager' ]
 			]
 		] );
 
@@ -43,11 +49,6 @@ class CreateInstanceHandler extends Handler {
 			'name' => [
 				self::PARAM_SOURCE => 'path',
 				ParamValidator::PARAM_REQUIRED => true,
-				ParamValidator::PARAM_TYPE => 'string',
-			],
-			'lang' => [
-				self::PARAM_SOURCE => 'query',
-				ParamValidator::PARAM_REQUIRED => false,
 				ParamValidator::PARAM_TYPE => 'string',
 			]
 		];

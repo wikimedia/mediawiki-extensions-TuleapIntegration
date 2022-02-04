@@ -51,6 +51,9 @@ class ProcessStatusHandler extends Handler {
 		if ( $status !== 'running' && $info->getExitStateMessage() ) {
 			$data['message'] = $info->getExitStateMessage();
 		}
+		if ( $info->getOutput() ) {
+			$data['output'] = $info->getOutput();
+		}
 
 		return $data;
 	}
