@@ -17,25 +17,6 @@
 		"TuleapIntegration\\": "src/",
 		"TuleapIntegration\\Tests\\": "tests/phpunit"
 	},
-	"ResourceModules": {
-		"ext.tuleapIntegration": {
-			"scripts": [
-				"ext.tuleapIntegration.js"
-			],
-			"styles": [
-				"ext.tuleapIntegration.less"
-			]
-		},
-		"ext.tuleapIntegration.styles": {
-			"styles": [
-				"ext.tuleapIntegration.static.less"
-			]
-		}
-	},
-	"ResourceFileModulePaths": {
-		"localBasePath": "resources",
-		"remoteExtPath": "TuleapIntegration/resources"
-	},
 	"ServiceWiringFiles": [
 		"includes/ServiceWiring.php"
 	],
@@ -52,7 +33,7 @@
 			"method": "POST",
 			"path": "/tuleap/create_instance/{name}",
 			"class": "TuleapIntegration\\Rest\\CreateInstanceHandler",
-			"services": [ "ProcessManager", "InstanceManager" ]
+			"services": [ "ProcessManager", "InstanceManager", "MainConfig" ]
 		},
 		{
 			"path": "/tuleap/process_status/{pid}",

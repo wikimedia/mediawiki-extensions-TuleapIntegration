@@ -17,7 +17,7 @@ class RegisterInstance implements IProcessStep {
 	}
 
 	public function execute( $data = [] ): array  {
-		$entity = $this->manager->getStore()->getNewInstance( $this->name );a
+		$entity = $this->manager->getStore()->getNewInstance( $this->name );
 
 		if ( !$this->manager->getStore()->storeEntity( $entity ) ) {
 			throw new \Exception( "Could not register instance" );
