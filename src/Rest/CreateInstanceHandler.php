@@ -39,6 +39,8 @@ class CreateInstanceHandler extends Handler {
 
 		$body = $this->getValidatedBody();
 		$body['dbprefix'] = $this->config->get( 'DBprefix' );
+		$body['server'] = $this->config->get( 'Server' );
+
 		$process = new ManagedProcess( [
 			'register-instance' => [
 				'class' => RegisterInstance::class,
@@ -48,7 +50,7 @@ class CreateInstanceHandler extends Handler {
 			'create-vault' => [
 				'class' => CreateInstanceVault::class,
 				'args' => [],
-				'services' => [ 'MainConfig', 'InstanceManager' ]
+				'services' => [ 'InstanceManager' ]
 			],
 			'install-instance' => [
 				'factory' => InstallInstance::class . '::factory',
@@ -98,12 +100,6 @@ class CreateInstanceHandler extends Handler {
 					ParamValidator::PARAM_REQUIRED => false,
 					ParamValidator::PARAM_TYPE => 'string',
 					ParamValidator::PARAM_DEFAULT => $this->config->get( 'DBpassword' ),
-				],
-				'server' => [
-					self::PARAM_SOURCE => 'body',
-					ParamValidator::PARAM_REQUIRED => false,
-					ParamValidator::PARAM_TYPE => 'string',
-					ParamValidator::PARAM_DEFAULT => $this->config->get( 'Server' ),
 				],
 				'adminuser' => [
 					self::PARAM_SOURCE => 'body',

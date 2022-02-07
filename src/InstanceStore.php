@@ -25,6 +25,9 @@ class InstanceStore {
 	}
 
 	public function getInstanceByName( $name ): ?InstanceEntity {
+		if ( $name === 'w' ) {
+			return new RootInstanceEntity();
+		}
 		$entities = $this->query( [ 'ti_name' => $name ] );
 		return empty( $entities ) ? null : $entities[0];
 	}
@@ -39,8 +42,10 @@ class InstanceStore {
 	}
 
 	public function storeEntity( InstanceEntity $entity ): bool {
+		if ( $entity instanceof RootInstanceEntity ) {
+			throw new \Exception( "Root instance not writable" );
+		}
 		$db = $this->loadBalancer->getConnection( DB_PRIMARY );
-
 		if ( $entity->getId() !== null ) {
 			$res = $db->update(
 				static::TABLE,

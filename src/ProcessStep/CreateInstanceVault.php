@@ -2,7 +2,6 @@
 
 namespace TuleapIntegration\ProcessStep;
 
-use Config;
 use MWStake\MediaWiki\Component\ProcessManager\IProcessStep;
 use Symfony\Component\Filesystem\Filesystem;
 use TuleapIntegration\InstanceEntity;
@@ -16,12 +15,10 @@ class CreateInstanceVault implements IProcessStep {
 	/** @var InstanceEntity|null */
 	private $instance;
 
-	public function __construct( Config $config, InstanceManager $instanceManager ) {
-		$configuredDir = $config->get( 'TuleapInstanceDirectory' );
-		if ( $configuredDir ) {
-			$this->instanceDir = $configuredDir;
-		} else {
-			$this->instanceDir = $GLOBALS['IP'] . '/_instances';
+	public function __construct( InstanceManager $instanceManager ) {
+		$this->instanceDir = rtrim( $instanceManager->getInstanceDirBase(), '/' );
+		if ( !$this->instanceDir ) {
+			throw new \Exception( "No base directory for instances set" );
 		}
 		$this->instanceManager = $instanceManager;
 	}
@@ -34,18 +31,19 @@ class CreateInstanceVault implements IProcessStep {
 		if ( !$this->instance ) {
 			throw new \Exception( 'Trying to create vault for non-registered instance' );
 		}
-		$directory = $this->getDirectoryName();
+		$instancePath = $this->getDirectoryName();
+		$directory = $this->instanceDir . $instancePath;
 		$fs = new Filesystem();
 		if ( $fs->exists( $directory ) ) {
 			throw new \Exception( "Instance already has a vault!" );
 		}
-		$fs->mkdir( $directory );
+		$fs->mkdir( [ $directory, "$directory/images", "$directory/cache" ] );
 		if ( !$fs->exists( $directory ) ) {
 			throw new \Exception( "Cannot create vault" );
 		}
-		$this->instance->setDirectory( $directory );
+
+		$this->instance->setDirectory( $instancePath );
 		if ( !$this->instanceManager->getStore()->storeEntity( $this->instance ) ) {
-			$fs->remove( $directory );
 			throw new \Exception( "Cannot store vault location" );
 		}
 
@@ -54,6 +52,6 @@ class CreateInstanceVault implements IProcessStep {
 
 	private function getDirectoryName() {
 		$dirName = str_replace( ' ', '_', $this->instance->getName() );
-		return rtrim( $this->instanceDir, '/' ) . '/' . $dirName;
+		return "/{$dirName}";
 	}
 }

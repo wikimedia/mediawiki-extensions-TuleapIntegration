@@ -10,7 +10,7 @@ class CliArgInstanceNameExtractor {
 		$newArgv = [];
 		foreach ( $args as $argVal ) {
 			// Case "--sfr <instancename>"
-			if ( $argVal === '--ti' ) {
+			if ( $argVal === '--sfr' ) {
 				$isSfrArg = true;
 				continue;
 			}
@@ -21,7 +21,7 @@ class CliArgInstanceNameExtractor {
 			}
 
 			// Case "--sfr=<instancename>" (and similar)
-			if ( strpos( $argVal, '--ti' ) === 0 ) {
+			if ( strpos( $argVal, '--sfr' ) === 0 ) {
 				$parts = explode( '=', $argVal, 2 );
 				if ( count( $parts ) !== 2 ) {
 					continue;

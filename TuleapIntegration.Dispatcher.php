@@ -1,6 +1,14 @@
 <?php
 
-require_once dirname( dirname( __DIR__ ) )  . '/vendor/autoload.php';
+require_once __DIR__  . '/vendor/autoload.php';
 
-error_log( class_exists( \TuleapIntegration\InstanceStore::class ) );
-$dbLB = \MediaWiki\MediaWikiServices::getInstance()->getService( 'InstanceManager' );
+$dbLB = \MediaWiki\MediaWikiServices::getInstance()->getDBLoadBalancer();
+
+$store = new \TuleapIntegration\InstanceStore( $dbLB );
+$manager = new \TuleapIntegration\InstanceManager( $store );
+
+$dispatcher = new \TuleapIntegration\Dispatcher( $_SERVER, $_REQUEST, $GLOBALS, $manager );
+
+foreach( $dispatcher->getFilesToRequire() as $pathname ) {
+	require $pathname;
+}

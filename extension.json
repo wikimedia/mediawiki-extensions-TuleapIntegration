@@ -36,6 +36,12 @@
 			"services": [ "ProcessManager", "InstanceManager", "MainConfig" ]
 		},
 		{
+			"method": "POST",
+			"path": "/tuleap/maintenance/{instance}/{script}",
+			"class": "TuleapIntegration\\Rest\\MaintenanceHandler",
+			"services": [ "ProcessManager", "InstanceManager" ]
+		},
+		{
 			"path": "/tuleap/process_status/{pid}",
 			"class": "TuleapIntegration\\Rest\\ProcessStatusHandler",
 			"services": [ "ProcessManager" ]
@@ -46,10 +52,5 @@
 			"services": [ "InstanceManager" ]
 		}
 	],
-	"config":  {
-		"TuleapInstanceDirectory": {
-			"value": null
-		}
-	},
 	"manifest_version": 2
 }

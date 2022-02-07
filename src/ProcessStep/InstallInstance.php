@@ -3,6 +3,7 @@
 namespace TuleapIntegration\ProcessStep;
 
 use MWStake\MediaWiki\Component\ProcessManager\IProcessStep;
+use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
 use TuleapIntegration\InstanceManager;
 
@@ -56,9 +57,11 @@ class InstallInstance implements IProcessStep {
 		$scriptPath = $this->manager->generateScriptPath( $instance );
 		$dbName = $this->manager->generateDbName( $this->dbPrefix );
 
+		$phpBinaryFinder = new ExecutableFinder();
+		$phpBinaryPath = $phpBinaryFinder->find( 'php' );
 		// We must run this in isolation, as to not override globals, services...
 		$process = new Process( [
-			'php', $GLOBALS['IP'] . '/extensions/TuleapIntegration/maintenance/installInstance.php',
+			$phpBinaryPath, $GLOBALS['IP'] . '/extensions/TuleapIntegration/maintenance/installInstance.php',
 			'--scriptpath', $scriptPath,
 			'--dbname', $dbName,
 			'--dbuser', $this->dbUser,
@@ -69,7 +72,7 @@ class InstallInstance implements IProcessStep {
 			'--instanceName', $instance->getName(),
 			'--adminuser', $this->adminUser,
 			'--adminpass', $this->adminPass,
-			'--instanceDir', $instance->getDirectory()
+			'--instanceDir', $this->manager->getDirectoryForInstance( $instance )
 		] );
 
 		$err = '';
