@@ -107,6 +107,30 @@ class InstanceStore {
 		return new InstanceEntity( $name, new DateTime() );
 	}
 
+	public function getInstanceNames(): array {
+		$res = $this->loadBalancer->getConnection( DB_REPLICA )->select(
+			static::TABLE,
+			[ 'ti_name' ],
+			[],
+			__METHOD__
+		);
+
+		$names = [];
+		foreach ( $res as $row ) {
+			$names[] = $row->ti_name;
+		}
+
+		return $names;
+	}
+
+	public function deleteInstance( int $id ) {
+		return $this->loadBalancer->getConnection( DB_PRIMARY )->delete(
+			static::TABLE,
+			[ 'ti_id' => $id ],
+			__METHOD__
+		);
+	}
+
 	private function entityFromRow( $row ): ?InstanceEntity {
 		foreach ( static::FIELDS as $field ) {
 			if ( !property_exists( $row, $field ) ) {

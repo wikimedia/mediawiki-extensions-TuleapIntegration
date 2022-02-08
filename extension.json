@@ -30,10 +30,16 @@
 	},
 	"RestRoutes": [
 		{
-			"method": "POST",
-			"path": "/tuleap/create_instance/{name}",
+			"method": "PUT",
+			"path": "/tuleap/instance/{name}",
 			"class": "TuleapIntegration\\Rest\\CreateInstanceHandler",
 			"services": [ "ProcessManager", "InstanceManager", "MainConfig" ]
+		},
+		{
+			"method": "POST",
+			"path": "/tuleap/instance/rename/{name}/{newname}",
+			"class": "TuleapIntegration\\Rest\\RenameInstanceHandler",
+			"services": [ "ProcessManager", "InstanceManager" ]
 		},
 		{
 			"method": "POST",
@@ -47,9 +53,15 @@
 			"services": [ "ProcessManager" ]
 		},
 		{
-			"path": "/tuleap/instance_status/{name}",
+			"path": "/tuleap/instance/{name}",
 			"class": "TuleapIntegration\\Rest\\InstanceStatusHandler",
 			"services": [ "InstanceManager" ]
+		},
+		{
+			"method": "DELETE",
+			"path": "/tuleap/instance/{name}",
+			"class": "TuleapIntegration\\Rest\\DeleteInstanceHandler",
+			"services": [ "ProcessManager", "InstanceManager", "MainConfig" ]
 		}
 	],
 	"manifest_version": 2

@@ -13,7 +13,6 @@ use TuleapIntegration\InstanceManager;
 use TuleapIntegration\ProcessStep\CreateInstanceVault;
 use TuleapIntegration\ProcessStep\InstallInstance;
 use TuleapIntegration\ProcessStep\RegisterInstance;
-use TuleapIntegration\ProcessStep\RunPostInstallScripts;
 use TuleapIntegration\ProcessStep\SetInstanceStatus;
 use Wikimedia\ParamValidator\ParamValidator;
 
@@ -55,11 +54,6 @@ class CreateInstanceHandler extends Handler {
 			'install-instance' => [
 				'factory' => InstallInstance::class . '::factory',
 				'args' => [ $body ],
-				'services' => [ 'InstanceManager' ]
-			],
-			'run-post-install-scripts' => [
-				'class' => RunPostInstallScripts::class,
-				'args' => [],
 				'services' => [ 'InstanceManager' ]
 			],
 			'set-instance-status' => [

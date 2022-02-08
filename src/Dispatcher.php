@@ -78,7 +78,7 @@ class Dispatcher {
 			$this->initInstanceVaultPathname();
 			$this->mainSettingsFile = "{$this->instanceVaultPathname}/LocalSettings.php";
 
-			$this->redirectIfNonExisting();
+			$this->redirectIfNoInstance();
 			$this->redirectIfNotReady();
 
 			$this->includeMainSettingsFile();
@@ -103,9 +103,8 @@ class Dispatcher {
 
 				if ( !$this->instance ) {
 					echo "Invalid instance: $name";
+					die();
 				}
-				echo ">>> Running maintenance script for instance '{$this->instance->getName()}'\n";
-
 				// We need to reset let the maintenance script reload the arguments, as we now have
 				// removed the "--sfr" flag, which would lead to an "Unexpected option" error
 				/** @var Maintenance */
@@ -147,7 +146,8 @@ class Dispatcher {
 	}
 
 	private function setupEnvironment() {
-		$this->globals['wgUploadPath'] = $this->instance->getScriptPath() . '/images';
+		// TODO: Hardcoded path
+		$this->globals['wgUploadPath'] =  '/w/_instances/' .$this->instance->getScriptPath() . '/images';
 		$this->globals['wgUploadDirectory'] = "{$this->instanceVaultPathname}/images";
 		$this->globals['wgReadOnlyFile'] = "{$this->globals['wgUploadDirectory']}/lock_yBgMBwiR";
 		$this->globals['wgFileCacheDirectory'] = "{$this->globals['wgUploadDirectory']}/cache";
@@ -157,31 +157,22 @@ class Dispatcher {
 		define( 'WIKI_FARMING', true );
 	}
 
-	private function redirectIfNonExisting() {
-		if( !file_exists( $this->mainSettingsFile ) ) {
-			if ( $this->isMaintenance() ) {
-				echo "No such instance\n";
-				die();
-			}
-			header( 'Location: /noinstance.html'  );
-			die();
-		}
-	}
-
 	private function redirectIfNotReady() {
 		$redir = null;
 		switch ( $this->instance->getStatus() ) {
 			case InstanceEntity::STATE_INITIALIZING:
-				$redir = '/ti_init.html';
+				$redir = '/w/ti_init.html';
 				break;
 			case InstanceEntity::STATE_MAINTENANCE:
-				$redir = '/ti_maintenance.html';
+				if ( !$this->isMaintenance() ) {
+					$redir = '/w/ti_maintenance.html';
+				}
 				break;
 		}
 
 		if ( $redir ) {
-			if ( $this->isMaintenance() && $this->instance->getStatus() !== InstanceEntity::STATE_MAINTENANCE ) {
-				echo "Instance is suspended\n";
+			if ( $this->isMaintenance() ) {
+				echo "Instance is not ready\n";
 				die();
 			}
 			header( 'Location: ' . $redir );
@@ -191,7 +182,7 @@ class Dispatcher {
 
 	private function redirectIfNoInstance() {
 		if( $this->instance === null ) {
-			header( 'Location: /w' );
+			echo "No such instance";
 			die();
 		}
 	}

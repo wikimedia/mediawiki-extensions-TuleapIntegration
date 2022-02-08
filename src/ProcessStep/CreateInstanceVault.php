@@ -31,7 +31,7 @@ class CreateInstanceVault implements IProcessStep {
 		if ( !$this->instance ) {
 			throw new \Exception( 'Trying to create vault for non-registered instance' );
 		}
-		$instancePath = $this->getDirectoryName();
+		$instancePath = $this->instanceManager->generateInstanceDirectoryName( $this->instance );
 		$directory = $this->instanceDir . $instancePath;
 		$fs = new Filesystem();
 		if ( $fs->exists( $directory ) ) {
@@ -48,10 +48,5 @@ class CreateInstanceVault implements IProcessStep {
 		}
 
 		return [ 'id' => $this->instance->getId() ];
-	}
-
-	private function getDirectoryName() {
-		$dirName = str_replace( ' ', '_', $this->instance->getName() );
-		return "/{$dirName}";
 	}
 }

@@ -2,51 +2,50 @@
 
 namespace TuleapIntegration\Rest;
 
-use MediaWiki\Rest\Handler;
 use MediaWiki\Rest\HttpException;
 use MediaWiki\Rest\Validator\JsonBodyValidator;
 use MWStake\MediaWiki\Component\ProcessManager\ManagedProcess;
 use MWStake\MediaWiki\Component\ProcessManager\ProcessManager;
 use TuleapIntegration\InstanceEntity;
 use TuleapIntegration\InstanceManager;
-use TuleapIntegration\ProcessStep\CreateInstanceVault;
-use TuleapIntegration\ProcessStep\InstallInstance;
+use TuleapIntegration\ProcessStep\Maintenance\RefreshLinks;
 use TuleapIntegration\ProcessStep\Maintenance\RunJobs;
-use TuleapIntegration\ProcessStep\RegisterInstance;
-use TuleapIntegration\ProcessStep\RunPostInstallScripts;
-use TuleapIntegration\ProcessStep\SetInstanceStatus;
+use TuleapIntegration\ProcessStep\Maintenance\SetGroups;
+use TuleapIntegration\ProcessStep\Maintenance\Update;
 use Wikimedia\ParamValidator\ParamValidator;
 
-class MaintenanceHandler extends Handler {
+class MaintenanceHandler extends InstanceHandler {
 	/** @var ProcessManager */
 	private $processManager;
-	/** @var InstanceManager */
-	private $instanceManager;
 
 	// TODO: Registry?
 	private $scriptMap = [
 		'runjobs' => [
 			'class' => RunJobs::class,
 			'services' => [ "InstanceManager" ]
+		],
+		'update' => [
+			'class' => Update::class,
+			'services' => [ "InstanceManager" ]
+		],
+		'setUserGroups' => [
+			'class' => SetGroups::class,
+			'services' => [ "InstanceManager" ]
+		],
+		'refresh-links' => [
+			'class' => RefreshLinks::class,
+			'services' => [ "InstanceManager" ]
 		]
 	];
 
 	public function __construct( ProcessManager $processManager, InstanceManager $instanceManager ) {
 		$this->processManager = $processManager;
-		$this->instanceManager = $instanceManager;
+		parent::__construct( $instanceManager );
 	}
 
-	public function execute() {
+	protected function doExecute( InstanceEntity $instance ) {
 		$params = $this->getValidatedParams();
 		$body = $this->getValidatedBody();
-
-		if ( !$this->instanceManager->checkInstanceNameValidity( $params['instance'] ) ) {
-			throw new HttpException( 'Invalid instance name: ' . $params['instance'] );
-		}
-		$instance = $this->instanceManager->getStore()->getInstanceByName( $params['instance'] );
-		if ( !$instance || $instance->getStatus() !== InstanceEntity::STATE_READY ) {
-			throw new HttpException( 'Instance not available or not ready' );
-		}
 
 		$script = $params['script'];
 		if ( !isset( $this->scriptMap[$script] ) ) {
@@ -57,10 +56,12 @@ class MaintenanceHandler extends Handler {
 		$this->instanceManager->getStore()->storeEntity( $instance );
 
 		$spec = $this->scriptMap[$script];
-		$spec['args'] = array_merge( [ $instance->getId() ], $spec['args'] ?? [], $body );
+		$spec['args'] = array_merge( [ $instance->getId() ], $spec['args'] ?? [] );
+		$spec['args'][] = $body;
+
 		$process = new ManagedProcess( [
 			$script => $spec,
-		] );
+		], 300 );
 
 		return $this->getResponseFactory()->createJson( [
 			'pid' => $this->processManager->startProcess( $process )
@@ -75,12 +76,7 @@ class MaintenanceHandler extends Handler {
 	}
 
 	public function getParamSettings() {
-		return [
-			'instance' => [
-				self::PARAM_SOURCE => 'path',
-				ParamValidator::PARAM_REQUIRED => true,
-				ParamValidator::PARAM_TYPE => 'string',
-			],
+		return parent::getParamSettings() + [
 			'script' => [
 				self::PARAM_SOURCE => 'path',
 				ParamValidator::PARAM_REQUIRED => true,

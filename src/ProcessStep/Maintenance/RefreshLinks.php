@@ -2,7 +2,7 @@
 
 namespace TuleapIntegration\ProcessStep\Maintenance;
 
-class RunJobs extends MaintenanceScript {
+class RefreshLinks extends MaintenanceScript {
 	/**
 	 * @inheritDoc
 	 */
@@ -14,6 +14,6 @@ class RunJobs extends MaintenanceScript {
 	 * @inheritDoc
 	 */
 	protected function getScriptPath(): string {
-		return 'maintenance/runJobs.php';
+		return 'maintenance/refreshLinks.php';
 	}
 }

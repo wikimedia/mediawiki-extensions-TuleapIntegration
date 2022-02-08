@@ -2,18 +2,19 @@
 
 namespace TuleapIntegration\ProcessStep\Maintenance;
 
-class RunJobs extends MaintenanceScript {
+
+class Update extends MaintenanceScript {
 	/**
 	 * @inheritDoc
 	 */
 	protected function getFormattedArgs(): array {
-		return [];
+		return [ '--quick' ];
 	}
 
 	/**
 	 * @inheritDoc
 	 */
 	protected function getScriptPath(): string {
-		return 'maintenance/runJobs.php';
+		return 'maintenance/update.php';
 	}
 }

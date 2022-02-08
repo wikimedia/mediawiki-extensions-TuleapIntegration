@@ -2,18 +2,18 @@
 
 namespace TuleapIntegration\ProcessStep\Maintenance;
 
-class RunJobs extends MaintenanceScript {
+class SetGroups extends MaintenanceScript {
 	/**
 	 * @inheritDoc
 	 */
 	protected function getFormattedArgs(): array {
-		return [];
+		return [ '-d', json_encode( $this->args ) ];
 	}
 
 	/**
 	 * @inheritDoc
 	 */
 	protected function getScriptPath(): string {
-		return 'maintenance/runJobs.php';
+		return 'extensions/TuleapIntegration/maintenance/setUserGroups.php';
 	}
 }
