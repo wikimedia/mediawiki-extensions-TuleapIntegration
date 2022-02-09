@@ -2,6 +2,7 @@
 
 namespace TuleapIntegration\Rest;
 
+use MediaWiki\Rest\Handler;
 use MediaWiki\Rest\HttpException;
 use MediaWiki\Rest\Validator\JsonBodyValidator;
 use MWStake\MediaWiki\Component\ProcessManager\ManagedProcess;
@@ -14,9 +15,11 @@ use TuleapIntegration\ProcessStep\Maintenance\SetGroups;
 use TuleapIntegration\ProcessStep\Maintenance\Update;
 use Wikimedia\ParamValidator\ParamValidator;
 
-class MaintenanceHandler extends InstanceHandler {
+class MaintenanceHandler extends Handler {
 	/** @var ProcessManager */
 	private $processManager;
+	/** @var InstanceManager */
+	protected $instanceManager;
 
 	// TODO: Registry?
 	private $scriptMap = [
@@ -40,28 +43,45 @@ class MaintenanceHandler extends InstanceHandler {
 
 	public function __construct( ProcessManager $processManager, InstanceManager $instanceManager ) {
 		$this->processManager = $processManager;
-		parent::__construct( $instanceManager );
+		$this->instanceManager = $instanceManager;
 	}
 
-	protected function doExecute( InstanceEntity $instance ) {
+	public function execute() {
 		$params = $this->getValidatedParams();
-		$body = $this->getValidatedBody();
-
 		$script = $params['script'];
 		if ( !isset( $this->scriptMap[$script] ) ) {
 			throw new HttpException( "Unknown script: $script" );
 		}
-
-		$instance->setStatus( InstanceEntity::STATE_MAINTENANCE );
-		$this->instanceManager->getStore()->storeEntity( $instance );
+		$timeout = $params['timeout'];
 
 		$spec = $this->scriptMap[$script];
-		$spec['args'] = array_merge( [ $instance->getId() ], $spec['args'] ?? [] );
+		$spec['args'] = $spec['args'] ?? [];
+
+		$instanceName = $params['instance'];
+
+		if ( $instanceName === '*' ) {
+			array_unshift( $spec['args'],-1 );
+			if ( $timeout < 3600 ) {
+				// Make sure enough time is given to big processes
+				$timeout = 3600;
+			}
+		} else {
+			if ( !$this->instanceManager->checkInstanceNameValidity( $instanceName ) ) {
+				throw new HttpException( 'Invalid instance name: ' . $instanceName );
+			}
+			$instance = $this->instanceManager->getStore()->getInstanceByName( $instanceName );
+			if ( !$instance || $instance->getStatus() !== InstanceEntity::STATE_READY ) {
+				throw new HttpException( 'Instance not available or not ready' );
+			}
+			array_unshift( $spec['args'], $instance->getId() );
+		}
+
+		$body = $this->getValidatedBody();
 		$spec['args'][] = $body;
 
 		$process = new ManagedProcess( [
 			$script => $spec,
-		], 300 );
+		], $timeout );
 
 		return $this->getResponseFactory()->createJson( [
 			'pid' => $this->processManager->startProcess( $process )
@@ -76,12 +96,23 @@ class MaintenanceHandler extends InstanceHandler {
 	}
 
 	public function getParamSettings() {
-		return parent::getParamSettings() + [
+		return [
+			'instance' => [
+				self::PARAM_SOURCE => 'path',
+				ParamValidator::PARAM_REQUIRED => true,
+				ParamValidator::PARAM_TYPE => 'string',
+			],
 			'script' => [
 				self::PARAM_SOURCE => 'path',
 				ParamValidator::PARAM_REQUIRED => true,
 				ParamValidator::PARAM_TYPE => 'string',
-			]
+			],
+			'timeout' => [
+				self::PARAM_SOURCE => 'query',
+				ParamValidator::PARAM_REQUIRED => false,
+				ParamValidator::PARAM_TYPE => 'integer',
+				ParamValidator::PARAM_DEFAULT => 300
+			],
 		];
 	}
 }

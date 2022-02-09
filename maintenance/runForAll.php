@@ -20,7 +20,7 @@ class RunForAll extends Maintenance {
 			$phpBinaryPath = $phpBinaryFinder->find( 'php' );
 			$process = new Process( array_merge(
 				[
-					$phpBinaryPath, $GLOBALS['IP'] . '/' . $this->getOption( 'script' ),
+					$phpBinaryPath, $this->getOption( 'script' ),
 				],
 				explode( ' ', $this->getOption( 'args' ) ),
 				[ '--sfr', $name ]
@@ -35,7 +35,6 @@ class RunForAll extends Maintenance {
 			}
 		}
 	}
-
 }
 
 $maintClass = 'RunForAll';

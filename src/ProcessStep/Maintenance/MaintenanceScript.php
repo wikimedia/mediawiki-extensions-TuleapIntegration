@@ -41,28 +41,20 @@ abstract class MaintenanceScript implements IProcessStep {
 		if ( !$this->instanceId && isset( $data['id'] ) ) {
 			$this->instanceId = $data['id'];
 		}
-		$instance = $this->manager->getStore()->getInstanceById( $this->instanceId );
-		if ( !$instance ) {
-			throw new Exception( 'Invalid instance or cannot be retrieved' );
+
+		if ( $this->instanceId === -1 ) {
+			$process = $this->runForAll();
+		} else {
+			$instance = $this->manager->getStore()->getInstanceById( $this->instanceId );
+			if ( !$instance ) {
+				throw new Exception( 'Invalid instance or cannot be retrieved' );
+			}
+			$process = $this->runForInstance( $instance );
 		}
-		$phpBinaryFinder = new ExecutableFinder();
-		$phpBinaryPath = $phpBinaryFinder->find( 'php' );
-		$scriptPath = ltrim( $this->getScriptPath(), '/' );
-		$process = new Process( array_merge(
-			[
-				$phpBinaryPath, $GLOBALS['IP'] . '/' . $scriptPath,
-			],
-			$this->getFormattedArgs(),
-			[ '--sfr', $instance->getName() ]
-		) );
-		$this->modifyProcess( $process );
 		$process->run();
 
-		$instance->setStatus( InstanceEntity::STATE_READY );
-		$this->manager->getStore()->storeEntity( $instance );
-
 		if ( !$process->isSuccessful() ) {
-			throw new Exception( $process->getErrorOutput() . $process->getCommandLine() );
+			throw new Exception( $process->getErrorOutput()  );
 		}
 
 		if ( $this->noOutput ) {
@@ -74,10 +66,46 @@ abstract class MaintenanceScript implements IProcessStep {
 		return  [
 			'id' => $this->instanceId,
 			'command' => $process->getCommandLine(),
-			'stdout' => $this->noOutput ? 'Output disabled' : $process->getOutput(),
+			'stdout' => $process->getOutput(),
 			'stderr' => $process->getErrorOutput(),
 			'warnings' => $data['warnings'] ?? [],
 		];
+	}
+
+	private function getPhpExecutable() {
+		$phpBinaryFinder = new ExecutableFinder();
+		return $phpBinaryFinder->find( 'php' );
+	}
+
+	private function runForInstance( InstanceEntity $instance ) {
+		$process = new Process( array_merge(
+			[
+				$this->getPhpExecutable(), $this->getFullScriptPath(),
+			],
+			$this->getFormattedArgs(),
+			[ '--sfr', $instance->getName() ]
+		) );
+		$this->modifyProcess( $process );
+
+		return $process;
+	}
+
+	private function runForAll() {
+		$process = new Process( array_merge(
+			[
+				$this->getPhpExecutable(), $GLOBALS['IP'] . '/extensions/TuleapIntegration/maintenance/runForAll.php',
+			],
+			[
+				'--script', $this->getFullScriptPath(),
+				'--args', '\"' . implode( ' ', $this->getFormattedArgs() ) . '\"'
+			]
+		) );
+
+		return $process;
+	}
+
+	private function getFullScriptPath() {
+		return $GLOBALS['IP'] . '/' . ltrim( $this->getScriptPath(), '/' );
 	}
 
 	/**
