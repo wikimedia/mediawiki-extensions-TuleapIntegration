@@ -67,11 +67,11 @@ class MaintenanceHandler extends Handler {
 			}
 		} else {
 			if ( !$this->instanceManager->checkInstanceNameValidity( $instanceName ) ) {
-				throw new HttpException( 'Invalid instance name: ' . $instanceName );
+				throw new HttpException( 'Invalid instance name: ' . $instanceName, 422 );
 			}
 			$instance = $this->instanceManager->getStore()->getInstanceByName( $instanceName );
 			if ( !$instance || $instance->getStatus() !== InstanceEntity::STATE_READY ) {
-				throw new HttpException( 'Instance not available or not ready' );
+				throw new HttpException( 'Instance not available or not ready', 400 );
 			}
 			array_unshift( $spec['args'], $instance->getId() );
 		}

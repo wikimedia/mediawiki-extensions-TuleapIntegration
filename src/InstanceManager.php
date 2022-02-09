@@ -48,8 +48,8 @@ class InstanceManager {
 		return $newEntity;
 	}
 
-	public function generateDbName( $prefix ) {
-		$prefix = "{$prefix}tuleap_";
+	public function generateDbName() {
+		$prefix = "tuleap_";
 
 		return substr( uniqid( $prefix, true ), 0, 16 );
 	}

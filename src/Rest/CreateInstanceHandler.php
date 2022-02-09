@@ -89,6 +89,12 @@ class CreateInstanceHandler extends Handler {
 					ParamValidator::PARAM_TYPE => 'string',
 					ParamValidator::PARAM_DEFAULT => $this->config->get( 'DBuser' ),
 				],
+				'dbname' => [
+					self::PARAM_SOURCE => 'body',
+					ParamValidator::PARAM_REQUIRED => false,
+					ParamValidator::PARAM_TYPE => 'string',
+					ParamValidator::PARAM_DEFAULT => '',
+				],
 				'dbpass' => [
 					self::PARAM_SOURCE => 'body',
 					ParamValidator::PARAM_REQUIRED => false,

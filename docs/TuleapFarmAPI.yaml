@@ -1,0 +1,255 @@
+swagger: '2.0'
+info:
+  description: 'Tuleap farm management API '
+  version: 1.0.0
+  title: Tuleap farm management
+host: localhost
+basePath: /rest.php/tuleap
+tags:
+  - name: instance
+    description: Instance management
+  - name: maintenance
+    description: Maintanence functions
+  - name: process
+    description: Process info
+schemes:
+  - https
+paths:
+  /instance/{name}:
+    get:
+      tags:
+        - instance
+      summary: Get status of the instance
+      description: ''
+      operationId: getIntanceStatus
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: name
+          in: path
+          description: Instance name
+          required: true
+          type: string
+      responses:
+        '422':
+          description: Invalid input
+        '404':
+          description: Name valid, but instance does not exist
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/InstanceStatus'
+    put:
+      tags:
+        - instance
+      summary: Create new instance
+      description: 'Body params which are not specified will default to "master" instance configs'
+      operationId: createInstance
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: name
+          in: path
+          description: Instance name
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Initial configuration
+          required: true
+          schema:
+            $ref: '#/definitions/CreateConfiguration'
+      responses:
+        '422':
+          description: Invalid instance name
+        '200':
+          description: Create instance process started
+          schema:
+            $ref: '#/definitions/ProcessResponse'
+    delete:
+      tags:
+        - instance
+      summary: Delete/suspend instance
+      description: ''
+      operationId: deleteInstance
+      produces:
+        - application/json
+      parameters:
+        - name: name
+          in: path
+          description: Instance name
+          required: true
+          type: string
+      responses:
+        '404':
+          description: Instance not found
+        '200':
+          description: Delete instance process started
+          schema:
+            $ref: '#/definitions/ProcessResponse'
+              
+  /instance/rename/{name}/{newname}:
+    post:
+      tags:
+        - instance
+      summary: Renames existing instance
+      description: ''
+      operationId: renameInstance
+      produces:
+        - application/json
+      parameters:
+        - name: name
+          in: path
+          description: Instance name
+          required: true
+          type: string
+        - name: newname
+          in: path
+          description: New instance name
+          required: true
+          type: string
+      responses:
+        '422':
+          description: Invalid instance name
+        '404':
+          description: Instance not found
+        '200':
+          description: Instance rename process started
+          schema:
+            $ref: '#/definitions/ProcessResponse'
+  /maintenance/{instance}/{script}:
+    post:
+      tags:
+        - maintenance
+      summary: Executes a maintenance script on the instance or all instances
+      description: ''
+      operationId: maintenanceOp
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: instance
+          in: path
+          description: Instance name on which to run the script. If specified instance name is "*", script will be executed on all instances
+          required: true
+          type: string
+        - name: script
+          in: path
+          description: Script key to execute
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Params to be passed to the script as input
+          required: true
+          schema:
+            $ref: '#/definitions/MaintenanceSample'
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/ProcessResponse'
+        '400':
+          description: Instance not found or not ready (not avialable for running a script)
+        '422':
+          description: Invalid instance name
+  /process_status/{pid}:
+    post:
+      tags:
+        - process
+      summary: Get status of a process
+      description: ''
+      operationId: processStatus
+      produces:
+        - application/json
+      parameters:
+        - name: pid
+          in: path
+          description: Process id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/ProcessStatus'
+        '400':
+          description: Invalid PID
+        '422':
+          description: Not found
+definitions:
+  CreateConfiguration:
+    type: object
+    required: [ 'adminpass' ]
+    properties:
+      dbserver:
+        type: string
+      dbuser:
+        type: string
+      dbpass:
+        type: string
+      dbname: 
+        type: string
+      adminuser:
+        type: string
+      adminpass:
+        type: string
+      lang:
+        type: string
+  ProcessResponse:
+    type: object
+    properties:
+      pid:
+        type: string
+        example: 1902802839923487
+  InstanceStatus:
+    type: object
+    properties:
+      status:
+        type: string
+        enum:
+          - ready
+          - maintenance
+          - initializing
+  MaintenanceSample:
+    type: object
+    properties:
+      groups:
+        type: object
+        properties:
+          WikiSysop:
+            type: array
+            items:
+              type: string
+              example: 'sysop'
+  ProcessStatus:
+    type: object
+    properties:
+      pid:
+        type: string
+      started_at:
+        type: string
+        example: "20220209125814"
+      status:
+        type: string
+        enum:
+          - finished
+          - running
+          - error
+      output:
+        type: object
+        description: 'Whatever the process returned as output'
+        
+        
+        
+        
+        
+        
+        
+        
+        

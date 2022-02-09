@@ -14,6 +14,7 @@ class InstallInstance implements IProcessStep {
 	private $dbUser;
 	private $dbPass;
 	private $dbPrefix;
+	private $dbName;
 	private $lang;
 	private $server;
 	private $adminUser;
@@ -28,13 +29,13 @@ class InstallInstance implements IProcessStep {
 		}
 
 		return new static(
-			$manager, $args['dbserver'], $args['dbuser'], $args['dbpass'],
+			$manager, $args['dbserver'], $args['dbuser'], $args['dbpass'], $args['dbname'] ?? null,
 			$args['dbprefix'], $args['lang'], $args['server'], $args['adminuser'], $args['adminpass']
 		);
 	}
 
 	public function __construct(
-		InstanceManager $manager, $dbserver, $dbuser, $dbpass,
+		InstanceManager $manager, $dbserver, $dbuser, $dbpass, $dbname,
 		$dbprefix, $lang, $server, $adminuser, $adminpass
 	) {
 		$this->manager = $manager;
@@ -42,6 +43,7 @@ class InstallInstance implements IProcessStep {
 		$this->dbUser = $dbuser;
 		$this->dbPass = $dbpass;
 		$this->dbPrefix = $dbprefix;
+		$this->dbName = $dbname;
 		$this->lang = $lang;
 		$this->server = $server;
 		$this->adminUser = $adminuser;
@@ -55,7 +57,10 @@ class InstallInstance implements IProcessStep {
 		}
 
 		$scriptPath = $this->manager->generateScriptPath( $instance );
-		$dbName = $this->manager->generateDbName( $this->dbPrefix );
+		if ( !$this->dbName ) {
+			$this->dbName = $this->manager->generateDbName();
+		}
+
 
 		$phpBinaryFinder = new ExecutableFinder();
 		$phpBinaryPath = $phpBinaryFinder->find( 'php' );
@@ -63,7 +68,7 @@ class InstallInstance implements IProcessStep {
 		$process = new Process( [
 			$phpBinaryPath, $GLOBALS['IP'] . '/extensions/TuleapIntegration/maintenance/installInstance.php',
 			'--scriptpath', $scriptPath,
-			'--dbname', $dbName,
+			'--dbname', $this->dbName,
 			'--dbuser', $this->dbUser,
 			'--dbpass', $this->dbPass,
 			'--dbserver', $this->dbServer,
