@@ -28,7 +28,6 @@
 			"class": "TuleapIntegration\\Hook\\RegisterTable"
 		}
 	},
-	"callback": "mwsInitComponents",
 	"RestRoutes": [
 		{
 			"method": "PUT",

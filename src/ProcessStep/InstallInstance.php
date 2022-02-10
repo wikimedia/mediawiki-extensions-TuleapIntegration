@@ -91,7 +91,7 @@ class InstallInstance implements IProcessStep {
 			throw new \Exception( $err );
 		}
 
-		$instance->setDatabaseName( $dbName );
+		$instance->setDatabaseName( $this->dbName );
 		$instance->setScriptPath( $scriptPath );
 		$this->manager->getStore()->storeEntity( $instance );
 

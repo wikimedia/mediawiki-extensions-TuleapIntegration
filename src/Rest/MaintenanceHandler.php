@@ -12,6 +12,7 @@ use TuleapIntegration\InstanceManager;
 use TuleapIntegration\ProcessStep\Maintenance\RefreshLinks;
 use TuleapIntegration\ProcessStep\Maintenance\RunJobs;
 use TuleapIntegration\ProcessStep\Maintenance\SetGroups;
+use TuleapIntegration\ProcessStep\Maintenance\TerminateSessions;
 use TuleapIntegration\ProcessStep\Maintenance\Update;
 use Wikimedia\ParamValidator\ParamValidator;
 
@@ -31,12 +32,16 @@ class MaintenanceHandler extends Handler {
 			'class' => Update::class,
 			'services' => [ "InstanceManager" ]
 		],
-		'setUserGroups' => [
+		'set-user-groups' => [
 			'class' => SetGroups::class,
 			'services' => [ "InstanceManager" ]
 		],
 		'refresh-links' => [
 			'class' => RefreshLinks::class,
+			'services' => [ "InstanceManager" ]
+		],
+		'terminate-sessions' => [
+			'class' => TerminateSessions::class,
 			'services' => [ "InstanceManager" ]
 		]
 	];
