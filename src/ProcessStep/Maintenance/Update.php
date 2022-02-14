@@ -2,7 +2,6 @@
 
 namespace TuleapIntegration\ProcessStep\Maintenance;
 
-
 class Update extends MaintenanceScript {
 	/**
 	 * @inheritDoc

@@ -138,7 +138,10 @@ class InstanceEntity {
 	 * @param string $status
 	 */
 	public function setStatus( $status ) {
-		if ( !in_array( $status, [ static::STATE_INITIALIZING, static::STATE_MAINTENANCE, static::STATE_READY ] ) ) {
+		$allowedStatus = [
+			static::STATE_INITIALIZING, static::STATE_MAINTENANCE, static::STATE_READY
+		];
+		if ( !in_array( $status, $allowedStatus ) ) {
 			return;
 		}
 		$this->setDirty( true );

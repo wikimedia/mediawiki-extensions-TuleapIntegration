@@ -45,8 +45,9 @@ class InstanceCliInstaller extends \CliInstaller {
 	}
 
 	/**
-	 *
+	 * // phpcs.ignore MediaWiki.Commenting.FunctionComment.MissingParamTag
 	 * @param string $msg
+	 * @param mixed $params
 	 */
 	public function showMessage( $msg, ...$params ) {
 		wfDebugLog( 'TuleapFarm', $msg );
@@ -54,7 +55,6 @@ class InstanceCliInstaller extends \CliInstaller {
 	}
 
 	/**
-	 *
 	 * @param string $msg
 	 */
 	public function showError( $msg, ...$params ) {

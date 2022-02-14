@@ -2,6 +2,7 @@
 
 namespace TuleapIntegration\ProcessStep;
 
+use Exception;
 use MWStake\MediaWiki\Component\ProcessManager\IProcessStep;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
@@ -10,21 +11,39 @@ use TuleapIntegration\InstanceManager;
 class InstallInstance implements IProcessStep {
 	/** @var InstanceManager */
 	private $manager;
+	/** @var string */
 	private $dbServer;
+	/** @var string */
 	private $dbUser;
+	/** @var string */
 	private $dbPass;
+	/** @var string */
 	private $dbPrefix;
+	/** @var string */
 	private $dbName;
+	/** @var string */
 	private $lang;
+	/** @var string */
 	private $server;
+	/** @var string */
 	private $adminUser;
+	/** @var string */
 	private $adminPass;
 
+	/**
+	 * @param InstanceManager $manager
+	 * @param array $args
+	 * @return static
+	 * @throws Exception
+	 */
 	public static function factory( InstanceManager $manager, $args ) {
-		$required = [ 'dbserver', 'dbuser', 'dbpass', 'dbprefix', 'lang', 'server', 'adminuser', 'adminpass' ];
-		foreach( $required as $key ) {
+		$required = [
+			'dbserver', 'dbuser', 'dbpass', 'dbprefix',
+			'lang', 'server', 'adminuser', 'adminpass'
+		];
+		foreach ( $required as $key ) {
 			if ( !isset( $args[$key] ) ) {
-				throw new \Exception( "Argument $key must be set" );
+				throw new Exception( "Argument $key must be set" );
 			}
 		}
 
@@ -34,6 +53,18 @@ class InstallInstance implements IProcessStep {
 		);
 	}
 
+	/**
+	 * @param InstanceManager $manager
+	 * @param string $dbserver
+	 * @param string $dbuser
+	 * @param string $dbpass
+	 * @param string $dbname
+	 * @param string $dbprefix
+	 * @param string $lang
+	 * @param string $server
+	 * @param string $adminuser
+	 * @param string $adminpass
+	 */
 	public function __construct(
 		InstanceManager $manager, $dbserver, $dbuser, $dbpass, $dbname,
 		$dbprefix, $lang, $server, $adminuser, $adminpass
@@ -50,10 +81,15 @@ class InstallInstance implements IProcessStep {
 		$this->adminPass = $adminpass;
 	}
 
-	public function execute( $data = [] ): array  {
+	/**
+	 * @param array $data
+	 * @return array
+	 * @throws Exception
+	 */
+	public function execute( $data = [] ): array {
 		$instance = $this->manager->getStore()->getInstanceById( $data['id'] );
 		if ( !$instance ) {
-			throw new \Exception( 'Failed to install non-registered instance' );
+			throw new Exception( 'Failed to install non-registered instance' );
 		}
 
 		$scriptPath = $this->manager->generateScriptPath( $instance );
@@ -61,12 +97,12 @@ class InstallInstance implements IProcessStep {
 			$this->dbName = $this->manager->generateDbName();
 		}
 
-
 		$phpBinaryFinder = new ExecutableFinder();
 		$phpBinaryPath = $phpBinaryFinder->find( 'php' );
 		// We must run this in isolation, as to not override globals, services...
 		$process = new Process( [
-			$phpBinaryPath, $GLOBALS['IP'] . '/extensions/TuleapIntegration/maintenance/installInstance.php',
+			$phpBinaryPath,
+			$GLOBALS['IP'] . '/extensions/TuleapIntegration/maintenance/installInstance.php',
 			'--scriptpath', $scriptPath,
 			'--dbname', $this->dbName,
 			'--dbuser', $this->dbUser,
@@ -88,7 +124,7 @@ class InstallInstance implements IProcessStep {
 		} );
 
 		if ( $process->getExitCode() !== 0 ) {
-			throw new \Exception( $err );
+			throw new Exception( $err );
 		}
 
 		$instance->setDatabaseName( $this->dbName );

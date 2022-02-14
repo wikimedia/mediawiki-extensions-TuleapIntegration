@@ -25,7 +25,9 @@ abstract class MaintenanceScript implements IProcessStep {
 	 * @param array $args
 	 * @param bool $noOutput
 	 */
-	public function __construct( InstanceManager $manager, $id = null, $args = [], $noOutput = false ) {
+	public function __construct(
+		InstanceManager $manager, $id = null, $args = [], $noOutput = false
+	) {
 		$this->manager = $manager;
 		$this->instanceId = $id;
 		$this->args = $args;
@@ -54,7 +56,7 @@ abstract class MaintenanceScript implements IProcessStep {
 		$process->run();
 
 		if ( !$process->isSuccessful() ) {
-			throw new Exception( $process->getErrorOutput()  );
+			throw new Exception( $process->getErrorOutput() );
 		}
 
 		if ( $this->noOutput ) {
@@ -63,7 +65,8 @@ abstract class MaintenanceScript implements IProcessStep {
 				'warnings' => $data['warnings'] ?? [],
 			];
 		}
-		return  [
+
+		return [
 			'id' => $this->instanceId,
 			'command' => $process->getCommandLine(),
 			'stdout' => $process->getOutput(),
@@ -72,11 +75,18 @@ abstract class MaintenanceScript implements IProcessStep {
 		];
 	}
 
+	/**
+	 * @return string|null
+	 */
 	private function getPhpExecutable() {
 		$phpBinaryFinder = new ExecutableFinder();
 		return $phpBinaryFinder->find( 'php' );
 	}
 
+	/**
+	 * @param InstanceEntity $instance
+	 * @return Process
+	 */
 	private function runForInstance( InstanceEntity $instance ) {
 		$process = new Process( array_merge(
 			[
@@ -90,10 +100,14 @@ abstract class MaintenanceScript implements IProcessStep {
 		return $process;
 	}
 
+	/**
+	 * @return Process
+	 */
 	private function runForAll() {
 		$process = new Process( array_merge(
 			[
-				$this->getPhpExecutable(), $GLOBALS['IP'] . '/extensions/TuleapIntegration/maintenance/runForAll.php',
+				$this->getPhpExecutable(), $GLOBALS['IP'] .
+				'/extensions/TuleapIntegration/maintenance/runForAll.php',
 			],
 			[
 				'--script', $this->getFullScriptPath(),
@@ -104,6 +118,9 @@ abstract class MaintenanceScript implements IProcessStep {
 		return $process;
 	}
 
+	/**
+	 * @return string
+	 */
 	private function getFullScriptPath() {
 		return $GLOBALS['IP'] . '/' . ltrim( $this->getScriptPath(), '/' );
 	}
@@ -124,6 +141,5 @@ abstract class MaintenanceScript implements IProcessStep {
 	 */
 	protected function modifyProcess( Process $process ) {
 		// STUB
-		return;
 	}
 }

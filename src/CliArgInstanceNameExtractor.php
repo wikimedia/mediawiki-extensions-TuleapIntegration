@@ -4,6 +4,10 @@ namespace TuleapIntegration;
 
 class CliArgInstanceNameExtractor {
 
+	/**
+	 * @param array &$args
+	 * @return string
+	 */
 	public function extractInstanceName( &$args ) : string {
 		$instanceName = '';
 		$isSfrArg = false;
@@ -26,7 +30,7 @@ class CliArgInstanceNameExtractor {
 				if ( count( $parts ) !== 2 ) {
 					continue;
 				}
-				$parts = array_map( function( $val ) {
+				$parts = array_map( function ( $val ) {
 					$val = trim( $val );
 					$val = trim( $val, '"' );
 					$val = trim( $val );

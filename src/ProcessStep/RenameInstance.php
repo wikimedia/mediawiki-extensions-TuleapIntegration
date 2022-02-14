@@ -2,6 +2,7 @@
 
 namespace TuleapIntegration\ProcessStep;
 
+use Exception;
 use MWStake\MediaWiki\Component\ProcessManager\IProcessStep;
 use Symfony\Component\Filesystem\Filesystem;
 use TuleapIntegration\InstanceManager;
@@ -14,13 +15,23 @@ class RenameInstance implements IProcessStep {
 	/** @var string */
 	private $newName;
 
+	/**
+	 * @param InstanceManager $manager
+	 * @param string $name
+	 * @param string $newName
+	 */
 	public function __construct( InstanceManager $manager, $name, $newName ) {
 		$this->manager = $manager;
 		$this->name = $name;
 		$this->newName = $newName;
 	}
 
-	public function execute( $data = [] ): array  {
+	/**
+	 * @param array $data
+	 * @return array
+	 * @throws Exception
+	 */
+	public function execute( $data = [] ): array {
 		$entity = $this->manager->getStore()->getInstanceByName( $this->name );
 		$newEntity = $this->manager->getRenamedInstanceEntity( $entity, $this->newName );
 
@@ -31,7 +42,7 @@ class RenameInstance implements IProcessStep {
 		);
 
 		if ( !$fs->exists( $this->manager->getDirectoryForInstance( $newEntity ) ) ) {
-			throw new \Exception( "Could not move instance vault!" );
+			throw new Exception( "Could not move instance vault!" );
 		}
 
 		$warnings = [];
@@ -42,7 +53,7 @@ class RenameInstance implements IProcessStep {
 			$this->manager->replaceConfigVar(
 				$newEntity, 'wgSitename', $entity->getName(), $newEntity->getName()
 			);
-		} catch ( \Exception $ex ) {
+		} catch ( Exception $ex ) {
 			$warnings[] = 'Failed to replace LocalSettings values: ' . $ex->getMessage();
 		}
 

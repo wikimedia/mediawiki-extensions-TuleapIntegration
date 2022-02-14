@@ -28,6 +28,17 @@
 			"class": "TuleapIntegration\\Hook\\RegisterTable"
 		}
 	},
+	"AvailableRights": [
+		"tuleap-farm-manage"
+	],
+	"GroupPermissions": {
+		"sysop": {
+			"tuleap-farm-manage": true
+		},
+		"user": {
+			"tuleap-farm-manage": false
+		}
+	},
 	"callback": "mwsInitComponents",
 	"RestRoutes": [
 		{

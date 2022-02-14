@@ -3,25 +3,45 @@
 namespace TuleapIntegration;
 
 class InstanceManager {
+	/** @var InstanceStore */
 	private $store;
 
+	/**
+	 * @param InstanceStore $store
+	 */
 	public function __construct( InstanceStore $store ) {
 		$this->store = $store;
 	}
 
+	/**
+	 * @return InstanceStore
+	 */
 	public function getStore(): InstanceStore {
 		return $this->store;
 	}
 
+	/**
+	 * @param string $name
+	 * @return bool
+	 */
 	public function checkInstanceNameValidity( $name ) {
 		// TODO: Implement
 		return true;
 	}
 
+	/**
+	 * @param string $name
+	 * @return bool
+	 */
 	public function isCreatable( string $name ) {
-		return $this->checkInstanceNameValidity( $name ) && !$this->getStore()->instanceExists( $name );
+		return $this->checkInstanceNameValidity( $name ) &&
+			!$this->getStore()->instanceExists( $name );
 	}
 
+	/**
+	 * @param InstanceEntity $instance
+	 * @return string
+	 */
 	public function generateScriptPath( InstanceEntity $instance ) {
 		$name = $instance->getName();
 		$name = str_replace( ' ', '-', $name );
@@ -30,6 +50,11 @@ class InstanceManager {
 		return "/$name";
 	}
 
+	/**
+	 * @param InstanceEntity $entity
+	 * @param string $newName
+	 * @return InstanceEntity
+	 */
 	public function getRenamedInstanceEntity( InstanceEntity $entity, $newName ) {
 		$newEntity = new InstanceEntity(
 			$newName,
@@ -48,17 +73,29 @@ class InstanceManager {
 		return $newEntity;
 	}
 
+	/**
+	 * @return false|string
+	 */
 	public function generateDbName() {
 		$prefix = "tuleap_";
 
 		return substr( uniqid( $prefix, true ), 0, 16 );
 	}
 
+	/**
+	 * @param InstanceEntity $entity
+	 * @return string
+	 */
 	public function generateInstanceDirectoryName( InstanceEntity $entity ) {
 		$dirName = str_replace( ' ', '_', $entity->getName() );
 		return "/{$dirName}";
 	}
 
+	/**
+	 * @param InstanceEntity $instance
+	 * @param string $path
+	 * @return string|null
+	 */
 	public function getDirectoryForInstance( InstanceEntity $instance, $path = '' ) {
 		if ( $instance instanceof RootInstanceEntity ) {
 			return $instance->getDirectory();
@@ -71,6 +108,9 @@ class InstanceManager {
 		return $base . '/' . $path;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getInstanceDirBase() {
 		return $GLOBALS['IP'] . '/_instances';
 	}

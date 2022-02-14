@@ -2,7 +2,6 @@
 
 namespace TuleapIntegration\Rest;
 
-use MediaWiki\Rest\Handler;
 use MediaWiki\Rest\HttpException;
 use MediaWiki\Rest\Validator\JsonBodyValidator;
 use MWStake\MediaWiki\Component\ProcessManager\ManagedProcess;
@@ -16,7 +15,7 @@ use TuleapIntegration\ProcessStep\Maintenance\TerminateSessions;
 use TuleapIntegration\ProcessStep\Maintenance\Update;
 use Wikimedia\ParamValidator\ParamValidator;
 
-class MaintenanceHandler extends Handler {
+class MaintenanceHandler extends AuthorizedHandler {
 	/** @var ProcessManager */
 	private $processManager;
 	/** @var InstanceManager */
@@ -46,12 +45,22 @@ class MaintenanceHandler extends Handler {
 		]
 	];
 
-	public function __construct( ProcessManager $processManager, InstanceManager $instanceManager ) {
+	/**
+	 * @param ProcessManager $processManager
+	 * @param InstanceManager $instanceManager
+	 */
+	public function __construct(
+		ProcessManager $processManager, InstanceManager $instanceManager
+	) {
 		$this->processManager = $processManager;
 		$this->instanceManager = $instanceManager;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function execute() {
+		$this->assertRights();
 		$params = $this->getValidatedParams();
 		$script = $params['script'];
 		if ( !isset( $this->scriptMap[$script] ) ) {
@@ -65,7 +74,7 @@ class MaintenanceHandler extends Handler {
 		$instanceName = $params['instance'];
 
 		if ( $instanceName === '*' ) {
-			array_unshift( $spec['args'],-1 );
+			array_unshift( $spec['args'], -1 );
 			if ( $timeout < 3600 ) {
 				// Make sure enough time is given to big processes
 				$timeout = 3600;
@@ -93,6 +102,9 @@ class MaintenanceHandler extends Handler {
 		] );
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function getBodyValidator( $contentType ) {
 		if ( $contentType === 'application/json' ) {
 			return new JsonBodyValidator( [] );
@@ -100,6 +112,9 @@ class MaintenanceHandler extends Handler {
 		return parent::getBodyValidator( $contentType );
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function getParamSettings() {
 		return [
 			'instance' => [

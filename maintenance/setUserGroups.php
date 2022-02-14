@@ -1,6 +1,6 @@
 <?php
 
-require_once( dirname( dirname( dirname( __DIR__ ) ) ) . '/maintenance/Maintenance.php' );
+require_once dirname( dirname( dirname( __DIR__ ) ) ) . '/maintenance/Maintenance.php';
 
 class SetUserGroups extends Maintenance {
 	/** @var \MediaWiki\User\UserFactory */
@@ -26,10 +26,10 @@ class SetUserGroups extends Maintenance {
 		$this->groupManager = \MediaWiki\MediaWikiServices::getInstance()->getUserGroupManager();
 		$data = $status->getValue();
 
-		if ( isset ( $data['add'] ) && is_array( $data['add'] ) )  {
+		if ( isset( $data['add'] ) && is_array( $data['add'] ) ) {
 			$this->changeGroups( $data['add'], 'add' );
 		}
-		if ( isset ( $data['remove'] ) && is_array( $data['remove'] ) )  {
+		if ( isset( $data['remove'] ) && is_array( $data['remove'] ) ) {
 			$this->changeGroups( $data['remove'], 'remove' );
 		}
 
@@ -40,8 +40,12 @@ class SetUserGroups extends Maintenance {
 		$this->output( "Completed!" );
 	}
 
+	/**
+	 * @param array $mapping
+	 * @param string $type
+	 */
 	private function changeGroups( $mapping, $type ) {
-		foreach( $mapping as $username => $groups ) {
+		foreach ( $mapping as $username => $groups ) {
 			$user = $this->userFactory->newFromName( $username );
 			if ( !( $user instanceof \User ) || !$user->isRegistered() ) {
 				$this->invalidUsers[] = $username;
@@ -62,4 +66,4 @@ class SetUserGroups extends Maintenance {
 }
 
 $maintClass = 'SetUserGroups';
-require_once( RUN_MAINTENANCE_IF_MAIN );
+require_once RUN_MAINTENANCE_IF_MAIN;

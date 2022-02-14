@@ -39,6 +39,8 @@ paths:
                 422:
                     description: Invalid input
                     content: {}
+            security:
+                - farm-management-auth: []
         put:
             tags:
                 - instance
@@ -70,6 +72,8 @@ paths:
                 422:
                     description: Invalid instance name
                     content: {}
+            security:
+                - farm-management-auth: []
             x-codegen-request-body-name: body
         delete:
             tags:
@@ -93,6 +97,8 @@ paths:
                 404:
                     description: Instance not found
                     content: {}
+            security:
+                - farm-management-auth: []
     /instance/rename/{name}/{newname}:
         post:
             tags:
@@ -125,6 +131,8 @@ paths:
                 422:
                     description: Invalid instance name
                     content: {}
+            security:
+                - farm-management-auth: []
     /maintenance/{instance}/{script}:
         post:
             tags:
@@ -173,6 +181,8 @@ paths:
                     description: Invalid instance name
                     content: {}
             x-codegen-request-body-name: body
+            security:
+                - farm-management-auth: []
     /process_status/{pid}:
         post:
             tags:
@@ -199,6 +209,8 @@ paths:
                 422:
                     description: Not found
                     content: {}
+            security:
+                - farm-management-auth: []
 components:
     schemas:
         CreateConfiguration:
@@ -264,3 +276,10 @@ components:
                     type: object
                     properties: {}
                     description: Whatever the process returned as output
+    securitySchemes:
+        farm-management-auth:
+            type: oauth2
+            flows:
+                clientCredentials:
+                    tokenUrl: http://localost/rest.php/oauth2/access_token
+                    scopes: {}

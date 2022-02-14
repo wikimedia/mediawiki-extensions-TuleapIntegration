@@ -2,20 +2,27 @@
 
 namespace TuleapIntegration\Rest;
 
-use MediaWiki\Rest\Handler;
 use MediaWiki\Rest\HttpException;
 use MWStake\MediaWiki\Component\ProcessManager\ProcessInfo;
 use MWStake\MediaWiki\Component\ProcessManager\ProcessManager;
 use Wikimedia\ParamValidator\ParamValidator;
 
-class ProcessStatusHandler extends Handler {
+class ProcessStatusHandler extends AuthorizedHandler {
+	/** @var ProcessManager */
 	private $manager;
 
+	/**
+	 * @param ProcessManager $manager
+	 */
 	public function __construct( ProcessManager $manager ) {
 		$this->manager = $manager;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function execute() {
+		$this->assertRights();
 		$params = $this->getValidatedParams();
 		$pid = $params['pid'];
 		if ( !preg_match( '/[0-9a-f]{32}/i', $pid ) ) {
@@ -31,6 +38,9 @@ class ProcessStatusHandler extends Handler {
 		);
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function getParamSettings() {
 		return [
 			'pid' => [
@@ -41,6 +51,9 @@ class ProcessStatusHandler extends Handler {
 		];
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	private function format( ProcessInfo $info ) {
 		$data = [ 'pid' => $info->getPid(), 'started_at' => $info->getStartDate()->format( 'YmdHis' ) ];
 		$status = $info->getState() === 'started' ? 'running' : 'finished';

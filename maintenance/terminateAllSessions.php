@@ -1,6 +1,6 @@
 <?php
 
-require_once( dirname( dirname( dirname( __DIR__ ) ) ) . '/maintenance/Maintenance.php' );
+require_once dirname( dirname( dirname( __DIR__ ) ) ) . '/maintenance/Maintenance.php';
 
 class TerminateAllSessions extends Maintenance {
 	private $batchSize = 1000;
@@ -42,4 +42,4 @@ class TerminateAllSessions extends Maintenance {
 }
 
 $maintClass = 'TerminateAllSessions';
-require_once( RUN_MAINTENANCE_IF_MAIN );
+require_once RUN_MAINTENANCE_IF_MAIN;

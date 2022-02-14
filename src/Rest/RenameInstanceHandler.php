@@ -2,35 +2,37 @@
 
 namespace TuleapIntegration\Rest;
 
-use Config;
-use MediaWiki\Rest\Handler;
 use MediaWiki\Rest\HttpException;
-use MediaWiki\Rest\Validator\JsonBodyValidator;
 use MWStake\MediaWiki\Component\ProcessManager\ManagedProcess;
 use MWStake\MediaWiki\Component\ProcessManager\ProcessManager;
-use TuleapIntegration\InstanceEntity;
 use TuleapIntegration\InstanceManager;
-use TuleapIntegration\ProcessStep\CreateInstanceVault;
-use TuleapIntegration\ProcessStep\InstallInstance;
 use TuleapIntegration\ProcessStep\Maintenance\RefreshLinks;
 use TuleapIntegration\ProcessStep\Maintenance\Update;
-use TuleapIntegration\ProcessStep\RegisterInstance;
 use TuleapIntegration\ProcessStep\RenameInstance;
-use TuleapIntegration\ProcessStep\SetInstanceStatus;
 use Wikimedia\ParamValidator\ParamValidator;
 
-class RenameInstanceHandler extends Handler {
+class RenameInstanceHandler extends AuthorizedHandler {
 	/** @var ProcessManager */
 	private $processManager;
 	/** @var InstanceManager */
 	private $instanceManager;
 
-	public function __construct( ProcessManager $processManager, InstanceManager $instanceManager ) {
+	/**
+	 * @param ProcessManager $processManager
+	 * @param InstanceManager $instanceManager
+	 */
+	public function __construct(
+		ProcessManager $processManager, InstanceManager $instanceManager
+	) {
 		$this->processManager = $processManager;
 		$this->instanceManager = $instanceManager;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function execute() {
+		$this->assertRights();
 		$params = $this->getValidatedParams();
 		$source = $params['name'];
 		$target = $params['newname'];
@@ -68,6 +70,9 @@ class RenameInstanceHandler extends Handler {
 		] );
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function getParamSettings() {
 		return [
 			'name' => [

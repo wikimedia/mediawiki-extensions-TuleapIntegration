@@ -3,6 +3,7 @@
 namespace TuleapIntegration;
 
 use DateTime;
+use Exception;
 use Wikimedia\Rdbms\ILoadBalancer;
 
 class InstanceStore {
@@ -18,12 +19,20 @@ class InstanceStore {
 		'ti_data'
 	];
 
+	/** @var ILoadBalancer */
 	private $loadBalancer;
 
+	/**
+	 * @param ILoadBalancer $loadBalancer
+	 */
 	public function __construct( ILoadBalancer $loadBalancer ) {
 		$this->loadBalancer = $loadBalancer;
 	}
 
+	/**
+	 * @param string $name
+	 * @return InstanceEntity|null
+	 */
 	public function getInstanceByName( $name ): ?InstanceEntity {
 		if ( $name === 'w' ) {
 			return new RootInstanceEntity();
@@ -32,18 +41,31 @@ class InstanceStore {
 		return empty( $entities ) ? null : $entities[0];
 	}
 
+	/**
+	 * @param int $id
+	 * @return InstanceEntity|null
+	 */
 	public function getInstanceById( int $id ): ?InstanceEntity {
 		$entities = $this->query( [ 'ti_id' => $id ] );
 		return empty( $entities ) ? null : $entities[0];
 	}
 
+	/**
+	 * @param string $name
+	 * @return bool
+	 */
 	public function instanceExists( $name ): bool {
 		return count( $this->query( [ 'ti_name' => $name ] ) ) > 0;
 	}
 
+	/**
+	 * @param InstanceEntity $entity
+	 * @return bool
+	 * @throws Exception
+	 */
 	public function storeEntity( InstanceEntity $entity ): bool {
 		if ( $entity instanceof RootInstanceEntity ) {
-			throw new \Exception( "Root instance not writable" );
+			throw new Exception( "Root instance not writable" );
 		}
 		$db = $this->loadBalancer->getConnection( DB_PRIMARY );
 		if ( $entity->getId() !== null ) {
@@ -76,6 +98,11 @@ class InstanceStore {
 		return $res;
 	}
 
+	/**
+	 * @param array $conditions
+	 * @param bool|null $raw If true, raw db data will be returned
+	 * @return array
+	 */
 	public function query( array $conditions, $raw = false ): array {
 		$res = $this->loadBalancer->getConnection( DB_REPLICA )->select(
 			static::TABLE,
@@ -103,10 +130,17 @@ class InstanceStore {
 		return $return;
 	}
 
+	/**
+	 * @param string $name
+	 * @return InstanceEntity
+	 */
 	public function getNewInstance( $name ) {
 		return new InstanceEntity( $name, new DateTime() );
 	}
 
+	/**
+	 * @return array
+	 */
 	public function getInstanceNames(): array {
 		$res = $this->loadBalancer->getConnection( DB_REPLICA )->select(
 			static::TABLE,
@@ -123,6 +157,10 @@ class InstanceStore {
 		return $names;
 	}
 
+	/**
+	 * @param int $id
+	 * @return bool
+	 */
 	public function deleteInstance( int $id ) {
 		return $this->loadBalancer->getConnection( DB_PRIMARY )->delete(
 			static::TABLE,
@@ -131,6 +169,10 @@ class InstanceStore {
 		);
 	}
 
+	/**
+	 * @param \stdClass $row
+	 * @return InstanceEntity|null
+	 */
 	private function entityFromRow( $row ): ?InstanceEntity {
 		foreach ( static::FIELDS as $field ) {
 			if ( !property_exists( $row, $field ) ) {

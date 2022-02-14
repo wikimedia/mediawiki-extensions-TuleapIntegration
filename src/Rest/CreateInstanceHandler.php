@@ -3,7 +3,6 @@
 namespace TuleapIntegration\Rest;
 
 use Config;
-use MediaWiki\Rest\Handler;
 use MediaWiki\Rest\HttpException;
 use MediaWiki\Rest\Validator\JsonBodyValidator;
 use MWStake\MediaWiki\Component\ProcessManager\ManagedProcess;
@@ -16,7 +15,7 @@ use TuleapIntegration\ProcessStep\RegisterInstance;
 use TuleapIntegration\ProcessStep\SetInstanceStatus;
 use Wikimedia\ParamValidator\ParamValidator;
 
-class CreateInstanceHandler extends Handler {
+class CreateInstanceHandler extends AuthorizedHandler {
 	/** @var ProcessManager */
 	private $processManager;
 	/** @var InstanceManager */
@@ -24,13 +23,24 @@ class CreateInstanceHandler extends Handler {
 	/** @var Config */
 	private $config;
 
-	public function __construct( ProcessManager $processManager, InstanceManager $instanceManager, Config $config ) {
+	/**
+	 * @param ProcessManager $processManager
+	 * @param InstanceManager $instanceManager
+	 * @param Config $config
+	 */
+	public function __construct(
+		ProcessManager $processManager, InstanceManager $instanceManager, Config $config
+	) {
 		$this->processManager = $processManager;
 		$this->instanceManager = $instanceManager;
 		$this->config = $config;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function execute() {
+		$this->assertRights();
 		$params = $this->getValidatedParams();
 		if ( !$this->instanceManager->isCreatable( $params['name'] ) ) {
 			throw new HttpException( 'Instance name not valid or instance exists', 422 );
@@ -68,6 +78,9 @@ class CreateInstanceHandler extends Handler {
 		] );
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function getBodyValidator( $contentType ) {
 		if ( $contentType === 'application/json' ) {
 			return new JsonBodyValidator( [
@@ -117,6 +130,9 @@ class CreateInstanceHandler extends Handler {
 		return parent::getBodyValidator( $contentType );
 	}
 
+	/**
+	 * @return array[]
+	 */
 	public function getParamSettings() {
 		return [
 			'name' => [

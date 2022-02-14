@@ -39,10 +39,9 @@ class Dispatcher {
 	private $instanceVaultPathname = '';
 
 	/**
-	 *
 	 * @param array $server $_SERVER
 	 * @param array $request $_REQUEST
-	 * @param array $globals $GLOBALS
+	 * @param array &$globals $GLOBALS
 	 * @param InstanceManager $manager
 	 */
 	public function __construct( $server, $request, &$globals, InstanceManager $manager ) {
@@ -70,11 +69,11 @@ class Dispatcher {
 	public function getFilesToRequire() {
 		$this->initInstance();
 		$this->defineConstants();
-		if( $this->isCliInstallerContext() ) {
+		if ( $this->isCliInstallerContext() ) {
 			return [];
 		}
 
-		if( $this->isInstanceWikiCall() ) {
+		if ( $this->isInstanceWikiCall() ) {
 			$this->initInstanceVaultPathname();
 			$this->mainSettingsFile = "{$this->instanceVaultPathname}/LocalSettings.php";
 
@@ -123,14 +122,12 @@ class Dispatcher {
 		$this->instanceVaultPathname = $this->manager->getDirectoryForInstance( $this->instance );
 	}
 
-
 	private function defineConstants() {
-		//For "root"-wiki calls only
+		// For "root"-wiki calls only
 		if ( $this->isRootWikiCall() ) {
 			define( 'FARMER_IS_ROOT_WIKI_CALL', true );
 			define( 'FARMER_CALLED_INSTANCE', '' );
-		}
-		else {
+		} else {
 			define( 'FARMER_IS_ROOT_WIKI_CALL', false );
 			define( 'FARMER_CALLED_INSTANCE', $this->instance->getName() );
 		}
@@ -147,7 +144,7 @@ class Dispatcher {
 
 	private function setupEnvironment() {
 		// TODO: Hardcoded path
-		$this->globals['wgUploadPath'] =  '/w/_instances/' .$this->instance->getScriptPath() . '/images';
+		$this->globals['wgUploadPath'] = '/w/_instances/' . $this->instance->getScriptPath() . '/images';
 		$this->globals['wgUploadDirectory'] = "{$this->instanceVaultPathname}/images";
 		$this->globals['wgReadOnlyFile'] = "{$this->globals['wgUploadDirectory']}/lock_yBgMBwiR";
 		$this->globals['wgFileCacheDirectory'] = "{$this->globals['wgUploadDirectory']}/cache";
@@ -181,7 +178,7 @@ class Dispatcher {
 	}
 
 	private function redirectIfNoInstance() {
-		if( $this->instance === null ) {
+		if ( $this->instance === null ) {
 			echo "No such instance";
 			die();
 		}
@@ -191,11 +188,13 @@ class Dispatcher {
 		$this->doInclude( $this->globals['IP'] . '/LocalSettings.Tuleap.php' );
 	}
 
-
 	private function includeMainSettingsFile() {
 		$this->doInclude( $this->mainSettingsFile );
 	}
 
+	/**
+	 * @param string $pathname
+	 */
 	private function doInclude( $pathname ) {
 		$this->filesToRequire[] = $pathname;
 	}
@@ -208,6 +207,6 @@ class Dispatcher {
 	 * @return bool
 	 */
 	private function isMaintenance() {
-		return defined( 'DO_MAINTENANCE' ) && is_file( DO_MAINTENANCE );
+		return defined( 'DO_MAINTENANCE' ) && is_file( RUN_MAINTENANCE_IF_MAIN );
 	}
 }

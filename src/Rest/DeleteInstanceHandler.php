@@ -2,7 +2,7 @@
 
 namespace TuleapIntegration\Rest;
 
-use MediaWiki\Rest\Handler;
+use Config;
 use MediaWiki\Rest\HttpException;
 use MWStake\MediaWiki\Component\ProcessManager\ManagedProcess;
 use MWStake\MediaWiki\Component\ProcessManager\ProcessManager;
@@ -12,21 +12,32 @@ use TuleapIntegration\ProcessStep\DropDatabase;
 use TuleapIntegration\ProcessStep\UnregisterInstance;
 use Wikimedia\ParamValidator\ParamValidator;
 
-class DeleteInstanceHandler extends Handler {
+class DeleteInstanceHandler extends AuthorizedHandler {
 	/** @var ProcessManager */
 	private $processManager;
 	/** @var InstanceManager */
 	private $instanceManager;
-	/** @var \Config */
+	/** @var Config */
 	private $config;
 
-	public function __construct( ProcessManager $processManager, InstanceManager $instanceManager, \Config $config ) {
+	/**
+	 * @param ProcessManager $processManager
+	 * @param InstanceManager $instanceManager
+	 * @param Config $config
+	 */
+	public function __construct(
+		ProcessManager $processManager, InstanceManager $instanceManager, Config $config
+	) {
 		$this->processManager = $processManager;
 		$this->instanceManager = $instanceManager;
 		$this->config = $config;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function execute() {
+		$this->assertRights();
 		$params = $this->getValidatedParams();
 		$instance = $this->instanceManager->getStore()->getInstanceByName( $params['name'] );
 		if ( !$instance ) {
@@ -47,7 +58,7 @@ class DeleteInstanceHandler extends Handler {
 			],
 			'drop-database' => [
 				'class' => DropDatabase::class,
-				'args' => [ $instance->getId(), $dbConnection  ],
+				'args' => [ $instance->getId(), $dbConnection ],
 				'services' => [ 'InstanceManager' ]
 			],
 			'unregister-instance' => [
@@ -62,6 +73,9 @@ class DeleteInstanceHandler extends Handler {
 		] );
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function getParamSettings() {
 		return [
 			'name' => [

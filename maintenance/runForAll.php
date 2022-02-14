@@ -3,13 +3,13 @@
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
 
-require_once( dirname( dirname( dirname( __DIR__ ) ) ) . '/maintenance/Maintenance.php' );
+require_once dirname( dirname( dirname( __DIR__ ) ) ) . '/maintenance/Maintenance.php';
 
 class RunForAll extends Maintenance {
 	public function __construct() {
 		parent::__construct();
-		$this->addOption('script', '', true, true );
-		$this->addOption('args', '', false, true );
+		$this->addOption( 'script', '', true, true );
+		$this->addOption( 'args', '', false, true );
 	}
 
 	public function execute() {
@@ -38,4 +38,4 @@ class RunForAll extends Maintenance {
 }
 
 $maintClass = 'RunForAll';
-require_once( RUN_MAINTENANCE_IF_MAIN );
+require_once RUN_MAINTENANCE_IF_MAIN;
