@@ -76,5 +76,24 @@
 			"services": [ "ProcessManager", "InstanceManager", "MainConfig" ]
 		}
 	],
+	"config": {
+		"TuleapPreSharedKey": {
+			"value": null
+		}
+	},
+	"SessionProviders": {
+		"TuleapIntegration\\PreSharedKeySessionProvider": {
+			"class": "TuleapIntegration\\PreSharedKeySessionProvider",
+			"args": []
+		}
+	},
+	"GrantPermissions": {
+		"farm-management": {
+			"tuleap-farm-manage": true
+		}
+	},
+	"GrantPermissionGroups": {
+		"farm-management": "administration"
+	},
 	"manifest_version": 2
 }
