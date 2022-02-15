@@ -5,8 +5,7 @@
 		"installer-name": "TuleapIntegration"
 	},
 	"require": {
-		"composer/installers": "~1.0",
-		"mwstake/mediawiki-component-processmanager": "~1.0"
+		"composer/installers": "~1.0"
 	},
 	"require-dev": {
 		"jakub-onderka/php-parallel-lint": "1.0.0",
