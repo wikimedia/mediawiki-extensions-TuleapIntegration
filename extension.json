@@ -17,5 +17,20 @@
 		"TuleapIntegration\\": "src/",
 		"TuleapIntegration\\Tests\\": "tests/phpunit"
 	},
+	"config": {
+		"TuleapUrl": {
+			"value": "https://tuleap-web.tuleap-aio-dev.docker"
+		},
+		"TuleapOAuth2Config": {
+			"value": {
+				"clientId": "",
+				"clientSecret": "",
+				"redirectUri": ""
+			}
+		}
+	},
+	"SpecialPages": {
+		"TuleapLogin": "TuleapIntegration\\Special\\TuleapLogin"
+	},
 	"manifest_version": 2
 }
