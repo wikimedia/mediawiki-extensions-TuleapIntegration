@@ -2,9 +2,11 @@
 
 namespace TuleapIntegration\Provider;
 
+use League\OAuth2\Client\OptionProvider\HttpBasicAuthOptionProvider;
 use League\OAuth2\Client\Provider\AbstractProvider;
 use League\OAuth2\Client\Token\AccessToken;
 use Psr\Http\Message\ResponseInterface;
+use TuleapIntegration\TuleapResourceOwner;
 
 class Tuleap extends AbstractProvider {
 	/** @var \Config */
@@ -12,7 +14,10 @@ class Tuleap extends AbstractProvider {
 
 	public function __construct( \Config $config ) {
 		$this->config = $config;
-		parent::__construct( $config->get( 'TuleapOAuth2Config' ), [] );
+		parent::__construct( $config->get( 'TuleapOAuth2Config' ), [
+			'verify' => false,
+			'optionProvider' => new HttpBasicAuthOptionProvider()
+		] );
 	}
 
 	public function getBaseAuthorizationUrl() {
@@ -40,6 +45,8 @@ class Tuleap extends AbstractProvider {
 	}
 
 	protected function checkResponse( ResponseInterface $response, $data ) {
+		error_log( $response->getStatusCode() );
+		//error_log( var_export( $response, 1));
 		if ( $response->getStatusCode() !== 200 ) {
 			throw new \Exception( "Invalid response from Tuleap authentication" );
 		}
@@ -47,7 +54,7 @@ class Tuleap extends AbstractProvider {
 
 	protected function createResourceOwner( array $response, AccessToken $token ) {
 		error_log( var_export( $response, 1));
-		return \User::newSystemUser( 'MediaWiki default' );
+		return new TuleapResourceOwner( 1, 'Tuleaper' );
 	}
 
 	private function getBaseUrl() {

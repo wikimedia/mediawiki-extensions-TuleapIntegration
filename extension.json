@@ -29,8 +29,19 @@
 			}
 		}
 	},
+	"Hooks": {
+		"BeforeInitialize": "redirectToLogin"
+	},
+	"HookHandlers": {
+		"redirectToLogin": {
+			"class": "TuleapIntegration\\Hook\\RedirectToLogin"
+		}
+	},
 	"SpecialPages": {
-		"TuleapLogin": "TuleapIntegration\\Special\\TuleapLogin"
+		"TuleapLogin": {
+			"class": "TuleapIntegration\\Special\\TuleapLogin",
+			"services": [ "TitleFactory", "UserFactory" ]
+		}
 	},
 	"manifest_version": 2
 }
