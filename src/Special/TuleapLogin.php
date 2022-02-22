@@ -17,7 +17,7 @@ class TuleapLogin extends \SpecialPage {
 	/** @var UserFactory */
 	private $userFactory;
 
-	/**.
+	/**
 	 * @param \TitleFactory $titleFactory
 	 * @param UserFactory $userFactory
 	 */
@@ -28,6 +28,9 @@ class TuleapLogin extends \SpecialPage {
 		$this->userFactory = $userFactory;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function execute( $subPage ) {
 		$this->setHeaders();
 		if ( $this->getUser()->isRegistered() ) {
@@ -42,7 +45,7 @@ class TuleapLogin extends \SpecialPage {
 		$this->getRequest()->getSession()->persist();
 		$this->getRequest()->getSession()->set( 'returnto', $this->getRequest()->getVal( 'returnto' ) );
 
-		$authorizationUrl = $this->provider->getAuthorizationUrl( [ 'scope' => 'profile' ] );
+		$authorizationUrl = $this->provider->getAuthorizationUrl( [ 'scope' => 'profile email openid' ] );
 
 		$this->getRequest()->getSession()->set( 'tuleapOauth2state', $this->provider->getState() );
 		$this->getRequest()->getSession()->save();
@@ -72,20 +75,18 @@ class TuleapLogin extends \SpecialPage {
 			$accessToken = $this->provider->getAccessToken( 'authorization_code', [
 				'code' => $this->getRequest()->getVal( 'code' )
 			] );
+
+			$resourceOwner = $this->provider->getResourceOwner( $accessToken );
+			$this->setUser( $resourceOwner );
+			$this->redirectToReturnTo();
 		} catch ( IdentityProviderException | UnexpectedValueException | \Exception $e ) {
-			error_log( "EX" );
 			$isDebug = $this->getRequest()->getBool( 'debug' );
 			$message = $isDebug ? new \RawMessage( $e->getMessage() ) : 'tuleap-login-error-desc';
 			$this->getOutput()->showErrorPage( 'tuleap-login-error', $message );
 			return true;
 		}
 
-		$resourceOwner = $this->provider->getResourceOwner( $accessToken );
-		$this->setUser( $resourceOwner );
-		$this->redirectToReturnTo();
-
 		return true;
-
 	}
 
 	/**
@@ -97,11 +98,13 @@ class TuleapLogin extends \SpecialPage {
 	 */
 	private function setUser( TuleapResourceOwner $owner ) {
 		$user = $this->userFactory->newFromName( $owner->getUsername() );
-		$user->setRealName( $owner->toArray()['name'] );
+		$user->setRealName( $owner->getRealName() );
 		$user->setEmail( $owner->getEmail() );
 		$user->load();
 		if ( !$user->isRegistered() ) {
 			$user->addToDatabase();
+		}
+		if ( $owner->isEmailVerified() ) {
 			$user->confirmEmail();
 		}
 		$user->setToken();
@@ -123,15 +126,21 @@ class TuleapLogin extends \SpecialPage {
 	 */
 	private function redirectToReturnTo() {
 		$title = null;
-		if( $this->getRequest()->getSession()->exists('returnto') ) {
-			$title = $this->titleFactory->newFromText( $this->getRequest()->getSession()->get('returnto' ) );
-			$this->getRequest()->getSession()->remove('returnto');
+		if ( $this->getRequest()->getSession()->exists( 'returnto' ) ) {
+			$title = $this->titleFactory->newFromText(
+				$this->getRequest()->getSession()->get( 'returnto' )
+			);
+			if ( !( $title instanceof Title ) ) {
+				$this->redirectToMainPage();
+				return;
+			}
+			$this->getRequest()->getSession()->remove( 'returnto' );
 			$this->getRequest()->getSession()->save();
+			$this->getOutput()->redirect( $title->getFullURL() );
 		}
+	}
 
-		if( !$title instanceof Title || 0 > $title->getArticleID() ) {
-			$title = $this->titleFactory->newMainPage();
-		}
-		$this->getOutput()->redirect( $title->getFullURL() );
+	private function redirectToMainPage() {
+		$this->getOutput()->redirect( $this->titleFactory->newMainPage()->getFullURL() );
 	}
 }

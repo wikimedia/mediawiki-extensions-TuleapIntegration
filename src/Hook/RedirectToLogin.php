@@ -7,6 +7,9 @@ use MediaWiki\Hook\BeforeInitializeHook;
 
 class RedirectToLogin implements BeforeInitializeHook {
 
+	/**
+	 * @inheritDoc
+	 */
 	public function onBeforeInitialize( $title, $unused, $output, $user, $request, $mediaWiki ) {
 		if ( $user->isRegistered() ) {
 			return true;
@@ -21,4 +24,3 @@ class RedirectToLogin implements BeforeInitializeHook {
 		return true;
 	}
 }
-

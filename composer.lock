@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "57045f21a9a2890370fe68fedc16028f",
+    "content-hash": "be21b8e5296e6969b47e53f30ea2851f",
     "packages": [
         {
             "name": "composer/installers",
@@ -137,10 +137,6 @@
                 "zend",
                 "zikula"
             ],
-            "support": {
-                "issues": "https://github.com/composer/installers/issues",
-                "source": "https://github.com/composer/installers/tree/v1.12.0"
-            },
             "funding": [
                 {
                     "url": "https://packagist.com",
@@ -261,10 +257,6 @@
                 "rest",
                 "web service"
             ],
-            "support": {
-                "issues": "https://github.com/guzzle/guzzle/issues",
-                "source": "https://github.com/guzzle/guzzle/tree/7.4.1"
-            },
             "funding": [
                 {
                     "url": "https://github.com/GrahamCampbell",
@@ -345,10 +337,6 @@
             "keywords": [
                 "promise"
             ],
-            "support": {
-                "issues": "https://github.com/guzzle/promises/issues",
-                "source": "https://github.com/guzzle/promises/tree/1.5.1"
-            },
             "funding": [
                 {
                     "url": "https://github.com/GrahamCampbell",
@@ -460,10 +448,6 @@
                 "uri",
                 "url"
             ],
-            "support": {
-                "issues": "https://github.com/guzzle/psr7/issues",
-                "source": "https://github.com/guzzle/psr7/tree/2.1.0"
-            },
             "funding": [
                 {
                     "url": "https://github.com/GrahamCampbell",
@@ -544,109 +528,7 @@
                 "oauth2",
                 "single sign on"
             ],
-            "support": {
-                "issues": "https://github.com/thephpleague/oauth2-client/issues",
-                "source": "https://github.com/thephpleague/oauth2-client/tree/2.6.1"
-            },
             "time": "2021-12-22T16:42:49+00:00"
-        },
-        {
-            "name": "mwstake/mediawiki-component-rel135vue3shim",
-            "version": "1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/hallowelt/mwstake-mediawiki-component-rel135vue3shim.git",
-                "reference": "25719e01499038a3a05a9cd05c4cfc73fc0eb80d"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/hallowelt/mwstake-mediawiki-component-rel135vue3shim/zipball/25719e01499038a3a05a9cd05c4cfc73fc0eb80d",
-                "reference": "25719e01499038a3a05a9cd05c4cfc73fc0eb80d",
-                "shasum": ""
-            },
-            "require": {
-                "mwstake/mediawiki-componentloader": "~1"
-            },
-            "require-dev": {
-                "jakub-onderka/php-console-highlighter": "0.4.0",
-                "jakub-onderka/php-parallel-lint": "1.0.0",
-                "mediawiki/mediawiki-codesniffer": "29.0.0",
-                "mediawiki/minus-x": "1.0.0",
-                "phpunit/phpunit": "^6.5"
-            },
-            "type": "library",
-            "autoload": {
-                "files": [
-                    "bootstrap.php"
-                ],
-                "psr-4": {
-                    "MWStake\\MediaWiki\\Component\\Rel135Vue3Shim\\": "src/",
-                    "MWStake\\MediaWiki\\Component\\Rel135Vue3Shim\\Tests\\": "tests/phpunit/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-3.0-only"
-            ],
-            "authors": [
-                {
-                    "name": "BlueSpice",
-                    "email": "support@bluespice.com"
-                }
-            ],
-            "description": "Provides VueJS version 3 vor MediaWiki 1.35 only",
-            "support": {
-                "issues": "https://github.com/hallowelt/mwstake-mediawiki-component-rel135vue3shim/issues",
-                "source": "https://github.com/hallowelt/mwstake-mediawiki-component-rel135vue3shim/tree/1.0"
-            },
-            "time": "2022-02-18T15:54:25+00:00"
-        },
-        {
-            "name": "mwstake/mediawiki-componentloader",
-            "version": "1.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/hallowelt/mwstake-mediawiki-componentloader.git",
-                "reference": "d4a0b61ac6bc97d367402d619762d3745b0eb3e4"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/hallowelt/mwstake-mediawiki-componentloader/zipball/d4a0b61ac6bc97d367402d619762d3745b0eb3e4",
-                "reference": "d4a0b61ac6bc97d367402d619762d3745b0eb3e4",
-                "shasum": ""
-            },
-            "require-dev": {
-                "jakub-onderka/php-console-highlighter": "0.4.0",
-                "jakub-onderka/php-parallel-lint": "1.0.0",
-                "mediawiki/mediawiki-codesniffer": "29.0.0",
-                "mediawiki/minus-x": "1.0.0"
-            },
-            "type": "library",
-            "autoload": {
-                "files": [
-                    "bootstrap.php"
-                ],
-                "psr-4": {
-                    "MWStake\\MediaWiki\\ComponentLoader\\": "src/",
-                    "MWStake\\MediaWiki\\ComponentLoader\\Tests\\": "tests/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-3.0-only"
-            ],
-            "authors": [
-                {
-                    "name": "BlueSpice",
-                    "email": "support@bluespice.com"
-                }
-            ],
-            "description": "Required for proper initialization of MWStake components",
-            "support": {
-                "issues": "https://github.com/hallowelt/mwstake-mediawiki-componentloader/issues",
-                "source": "https://github.com/hallowelt/mwstake-mediawiki-componentloader/tree/1.0.0"
-            },
-            "time": "2022-01-10T15:05:36+00:00"
         },
         {
             "name": "paragonie/random_compat",
@@ -691,11 +573,6 @@
                 "pseudorandom",
                 "random"
             ],
-            "support": {
-                "email": "info@paragonie.com",
-                "issues": "https://github.com/paragonie/random_compat/issues",
-                "source": "https://github.com/paragonie/random_compat"
-            },
             "time": "2020-10-15T08:29:30+00:00"
         },
         {
@@ -745,9 +622,6 @@
                 "psr",
                 "psr-18"
             ],
-            "support": {
-                "source": "https://github.com/php-fig/http-client/tree/master"
-            },
             "time": "2020-06-29T06:28:15+00:00"
         },
         {
@@ -800,9 +674,6 @@
                 "request",
                 "response"
             ],
-            "support": {
-                "source": "https://github.com/php-fig/http-factory/tree/master"
-            },
             "time": "2019-04-30T12:38:16+00:00"
         },
         {
@@ -853,9 +724,6 @@
                 "request",
                 "response"
             ],
-            "support": {
-                "source": "https://github.com/php-fig/http-message/tree/master"
-            },
             "time": "2016-08-06T14:39:51+00:00"
         },
         {
@@ -896,10 +764,6 @@
                 }
             ],
             "description": "A polyfill for getallheaders.",
-            "support": {
-                "issues": "https://github.com/ralouphie/getallheaders/issues",
-                "source": "https://github.com/ralouphie/getallheaders/tree/develop"
-            },
             "time": "2019-03-08T08:55:37+00:00"
         },
         {
@@ -950,9 +814,6 @@
             ],
             "description": "A generic function and convention to trigger deprecation notices",
             "homepage": "https://symfony.com",
-            "support": {
-                "source": "https://github.com/symfony/deprecation-contracts/tree/v2.5.0"
-            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -1031,11 +892,6 @@
                 "validation",
                 "versioning"
             ],
-            "support": {
-                "irc": "irc://irc.freenode.org/composer",
-                "issues": "https://github.com/composer/semver/issues",
-                "source": "https://github.com/composer/semver/tree/1.5.0"
-            },
             "time": "2019-03-19T17:25:45+00:00"
         },
         {
@@ -1096,11 +952,6 @@
                 "spdx",
                 "validator"
             ],
-            "support": {
-                "irc": "irc://irc.freenode.org/composer",
-                "issues": "https://github.com/composer/spdx-licenses/issues",
-                "source": "https://github.com/composer/spdx-licenses/tree/1.5.2"
-            },
             "time": "2019-07-29T10:31:59+00:00"
         },
         {
@@ -1143,10 +994,6 @@
                     "email": "jakub.onderka@gmail.com"
                 }
             ],
-            "support": {
-                "issues": "https://github.com/JakubOnderka/PHP-Console-Color/issues",
-                "source": "https://github.com/JakubOnderka/PHP-Console-Color/tree/master"
-            },
             "abandoned": "php-parallel-lint/php-console-color",
             "time": "2018-09-29T17:23:10+00:00"
         },
@@ -1194,10 +1041,6 @@
                 }
             ],
             "description": "Highlight PHP code in terminal",
-            "support": {
-                "issues": "https://github.com/JakubOnderka/PHP-Console-Highlighter/issues",
-                "source": "https://github.com/JakubOnderka/PHP-Console-Highlighter/tree/master"
-            },
             "abandoned": "php-parallel-lint/php-console-highlighter",
             "time": "2018-09-29T18:48:56+00:00"
         },
@@ -1247,10 +1090,6 @@
             ],
             "description": "This tool check syntax of PHP files about 20x faster than serial check.",
             "homepage": "https://github.com/JakubOnderka/PHP-Parallel-Lint",
-            "support": {
-                "issues": "https://github.com/JakubOnderka/PHP-Parallel-Lint/issues",
-                "source": "https://github.com/JakubOnderka/PHP-Parallel-Lint/tree/master"
-            },
             "abandoned": "php-parallel-lint/php-parallel-lint",
             "time": "2018-02-24T15:31:20+00:00"
         },
@@ -1297,9 +1136,6 @@
                 "codesniffer",
                 "mediawiki"
             ],
-            "support": {
-                "source": "https://github.com/wikimedia/mediawiki-tools-codesniffer/tree/master"
-            },
             "time": "2020-01-09T18:09:25+00:00"
         },
         {
@@ -1346,9 +1182,6 @@
             ],
             "description": "Removes executable bit from files that shouldn't be executable",
             "homepage": "https://www.mediawiki.org/wiki/MinusX",
-            "support": {
-                "source": "https://github.com/wikimedia/mediawiki-tools-minus-x/tree/master"
-            },
             "time": "2020-01-20T05:12:15+00:00"
         },
         {
@@ -1393,10 +1226,6 @@
                 "container-interop",
                 "psr"
             ],
-            "support": {
-                "issues": "https://github.com/php-fig/container/issues",
-                "source": "https://github.com/php-fig/container/tree/1.1.2"
-            },
             "time": "2021-11-05T16:50:12+00:00"
         },
         {
@@ -1448,11 +1277,6 @@
                 "phpcs",
                 "standards"
             ],
-            "support": {
-                "issues": "https://github.com/squizlabs/PHP_CodeSniffer/issues",
-                "source": "https://github.com/squizlabs/PHP_CodeSniffer",
-                "wiki": "https://github.com/squizlabs/PHP_CodeSniffer/wiki"
-            },
             "time": "2019-12-04T04:46:47+00:00"
         },
         {
@@ -1535,9 +1359,6 @@
                 "console",
                 "terminal"
             ],
-            "support": {
-                "source": "https://github.com/symfony/console/tree/v5.4.3"
-            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -1617,9 +1438,6 @@
                 "polyfill",
                 "portable"
             ],
-            "support": {
-                "source": "https://github.com/symfony/polyfill-ctype/tree/v1.24.0"
-            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -1698,9 +1516,6 @@
                 "portable",
                 "shim"
             ],
-            "support": {
-                "source": "https://github.com/symfony/polyfill-intl-grapheme/tree/v1.24.0"
-            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -1782,9 +1597,6 @@
                 "portable",
                 "shim"
             ],
-            "support": {
-                "source": "https://github.com/symfony/polyfill-intl-normalizer/tree/v1.24.0"
-            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -1865,9 +1677,6 @@
                 "portable",
                 "shim"
             ],
-            "support": {
-                "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.24.0"
-            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -1944,9 +1753,6 @@
                 "portable",
                 "shim"
             ],
-            "support": {
-                "source": "https://github.com/symfony/polyfill-php73/tree/v1.24.0"
-            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -2027,9 +1833,6 @@
                 "portable",
                 "shim"
             ],
-            "support": {
-                "source": "https://github.com/symfony/polyfill-php80/tree/v1.24.0"
-            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -2110,9 +1913,6 @@
                 "interoperability",
                 "standards"
             ],
-            "support": {
-                "source": "https://github.com/symfony/service-contracts/tree/v2.5.0"
-            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -2196,9 +1996,6 @@
                 "utf-8",
                 "utf8"
             ],
-            "support": {
-                "source": "https://github.com/symfony/string/tree/v5.4.3"
-            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -2223,5 +2020,5 @@
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": [],
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "1.1.0"
 }
