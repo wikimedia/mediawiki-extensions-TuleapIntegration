@@ -27,11 +27,15 @@
 				"clientSecret": "",
 				"redirectUri": ""
 			}
+		},
+		"TuleapArtLinksGroupId": {
+			"value": null
 		}
 	},
 	"Hooks": {
 		"BeforeInitialize": "redirectToLogin",
-		"PersonalUrls": "removeManualLogin"
+		"PersonalUrls": "removeManualLogin",
+		"OutputPageBeforeHTML": "addEntityLinks"
 	},
 	"HookHandlers": {
 		"redirectToLogin": {
@@ -39,6 +43,10 @@
 		},
 		"removeManualLogin": {
 			"class": "TuleapIntegration\\Hook\\RemoveManualLogin"
+		},
+		"addEntityLinks": {
+			"class": "TuleapIntegration\\Hook\\AddEntityLinks",
+			"services": [ "MainConfig" ]
 		}
 	},
 	"SpecialPages": {
