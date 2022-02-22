@@ -42,7 +42,7 @@ class TuleapResourceOwner implements ResourceOwnerInterface {
 		$this->realname = $realname;
 		$this->email = $email;
 		$this->emailVerified = $emailVerified;
-		$this->locale = $locale;
+		$this->locale = $this->convertToLangCode( $locale );
 	}
 
 	/**
@@ -99,5 +99,19 @@ class TuleapResourceOwner implements ResourceOwnerInterface {
 			'realname' => $this->getRealName(),
 			'locale' => $this->getLocale()
 		];
+	}
+
+	/**
+	 * @param string $locale
+	 * @return string|null
+	 */
+	private function convertToLangCode( $locale ) {
+		if ( !$locale ) {
+			return $locale;
+		}
+
+		$code = locale_get_primary_language( $locale );
+
+		return $code ?? '';
 	}
 }

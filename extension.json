@@ -30,17 +30,21 @@
 		}
 	},
 	"Hooks": {
-		"BeforeInitialize": "redirectToLogin"
+		"BeforeInitialize": "redirectToLogin",
+		"PersonalUrls": "removeManualLogin"
 	},
 	"HookHandlers": {
 		"redirectToLogin": {
 			"class": "TuleapIntegration\\Hook\\RedirectToLogin"
+		},
+		"removeManualLogin": {
+			"class": "TuleapIntegration\\Hook\\RemoveManualLogin"
 		}
 	},
 	"SpecialPages": {
 		"TuleapLogin": {
 			"class": "TuleapIntegration\\Special\\TuleapLogin",
-			"services": [ "TitleFactory", "UserFactory" ]
+			"services": [ "TitleFactory", "UserFactory", "UserOptionsManager" ]
 		}
 	},
 	"manifest_version": 2

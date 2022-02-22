@@ -4,7 +4,9 @@ namespace TuleapIntegration\Special;
 
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use MediaWiki\User\UserFactory;
+use MediaWiki\User\UserOptionsManager;
 use Title;
+use TitleFactory as TitleFactory;
 use TuleapIntegration\Provider\Tuleap;
 use TuleapIntegration\TuleapResourceOwner;
 use UnexpectedValueException;
@@ -12,20 +14,27 @@ use UnexpectedValueException;
 class TuleapLogin extends \SpecialPage {
 	/** @var Tuleap */
 	private $provider;
-	/** @var \TitleFactory */
+	/** @var TitleFactory */
 	private $titleFactory;
 	/** @var UserFactory */
 	private $userFactory;
+	/** @var UserOptionsManager */
+	private $userOptionsManager;
 
 	/**
-	 * @param \TitleFactory $titleFactory
+	 * @param TitleFactory $titleFactory
 	 * @param UserFactory $userFactory
+	 * @param UserOptionsManager $userOptionsManager
 	 */
-	public function __construct( \TitleFactory $titleFactory, UserFactory $userFactory ) {
+	public function __construct(
+		TitleFactory $titleFactory, UserFactory $userFactory,
+		UserOptionsManager $userOptionsManager
+	) {
 		parent::__construct( 'TuleapLogin', '', false );
 		$this->provider = new Tuleap( $this->getConfig() );
 		$this->titleFactory = $titleFactory;
 		$this->userFactory = $userFactory;
+		$this->userOptionsManager = $userOptionsManager;
 	}
 
 	/**
@@ -107,6 +116,10 @@ class TuleapLogin extends \SpecialPage {
 		if ( $owner->isEmailVerified() ) {
 			$user->confirmEmail();
 		}
+		if ( $owner->getLocale() ) {
+			$this->userOptionsManager->setOption( $user, 'language', $owner->getLocale() );
+		}
+
 		$user->setToken();
 
 		$this->getRequest()->getSession()->persist();

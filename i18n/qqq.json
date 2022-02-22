@@ -1,3 +1,5 @@
 {
-	"tuleapintegration-desc": "Description of TuleapIntegration for [[Special:Version]]"
+	"tuleapintegration-desc": "Description of TuleapIntegration for [[Special:Version]]",
+	"tuleap-login-error": "Page name when authentication with Tuleap fails",
+	"tuleap-login-error-desc": "Generic error message when authentication with Tuleap fails"
 }
