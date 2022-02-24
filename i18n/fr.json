@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Gomoko"
+		]
+	},
+	"tuleapintegration-desc": "Intègre MédiaWiki das Tuleap",
+	"tuleap-login-error": "Erreur de connexion",
+	"tuleap-login-error-desc": "Une erreur s’est produite en essayant de s’authentifier avec Tuleap. Veuillez contacter l’administrateur de Tuleap."
+}

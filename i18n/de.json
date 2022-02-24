@@ -1,3 +1,8 @@
 {
-	"tuleapintegration-desc": "Integriert MediaWiki in Tuleap"
+	"@metadata": {
+		"authors": []
+	},
+	"tuleapintegration-desc": "Integriert MediaWiki in Tuleap",
+	"tuleap-login-error": "Fehler bei der Anmeldung",
+	"tuleap-login-error-desc": "Beim Versuch, sich bei Tuleap zu authentifizieren, ist ein Fehler aufgetreten. Bitte kontaktiere den Tuleap-Administrator"
 }
