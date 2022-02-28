@@ -1,8 +1,10 @@
 {
 	"@metadata": {
 		"authors": [
-			"Pacha Tchernof"
+			"Pacha Tchernof",
+			"Tanzun"
 		]
 	},
+	"tuleapintegration-desc": "Интегрирует вики-движок MediaWiki в Tuleap",
 	"tuleap-login-error": "Ошибка входа"
 }

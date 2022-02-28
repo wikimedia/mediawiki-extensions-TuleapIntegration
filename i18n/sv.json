@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Sabelöga"
+		]
+	},
+	"tuleapintegration-desc": "Integrerar MediaWiki med Tuleap",
+	"tuleap-login-error": "Inloggningsproblem",
+	"tuleap-login-error-desc": "Ett fel inträffade vid auktorisering mot Tuleap. Var god kontakta en Tuleap-administratör"
+}
