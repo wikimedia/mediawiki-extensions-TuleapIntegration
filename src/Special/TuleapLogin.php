@@ -106,7 +106,7 @@ class TuleapLogin extends \SpecialPage {
 	 * @throws \MWException
 	 */
 	private function setUser( TuleapResourceOwner $owner ) {
-		$user = $this->userFactory->newFromName( $owner->getUsername() );
+		$user = $this->userFactory->newFromName( $owner->getId() );
 		$user->setRealName( $owner->getRealName() );
 		$user->setEmail( $owner->getEmail() );
 		$user->load();

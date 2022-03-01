@@ -20,8 +20,9 @@ class AddEntityLinks implements OutputPageBeforeHTMLHook {
 	 * @inheritDoc
 	 */
 	public function onOutputPageBeforeHTML( $out, &$text ) {
-		$reference_manager = \ReferenceManager::instance();
-		$reference_manager->insertReferences( $text, $this->group );
+		// DISABLED FOR DEV, cannot work until instances work inside of Tuleap app
+		//$reference_manager = \ReferenceManager::instance();
+		//$reference_manager->insertReferences( $text, $this->group );
 
 		return true;
 	}

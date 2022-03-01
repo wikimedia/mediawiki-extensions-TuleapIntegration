@@ -34,8 +34,9 @@
 	},
 	"Hooks": {
 		"BeforeInitialize": "redirectToLogin",
-		"PersonalUrls": "removeManualLogin",
-		"OutputPageBeforeHTML": "addEntityLinks"
+		"PersonalUrls": [ "removeManualLogin", "replaceUserLinks" ],
+		"OutputPageBeforeHTML": "addEntityLinks",
+		"HtmlPageLinkRendererEnd": "replaceUserLinks"
 	},
 	"HookHandlers": {
 		"redirectToLogin": {
@@ -47,6 +48,10 @@
 		"addEntityLinks": {
 			"class": "TuleapIntegration\\Hook\\AddEntityLinks",
 			"services": [ "MainConfig" ]
+		},
+		"replaceUserLinks": {
+			"class": "TuleapIntegration\\Hook\\ReplaceUserLinks",
+			"services": [ "UserFactory" ]
 		}
 	},
 	"SpecialPages": {

@@ -6,6 +6,8 @@ use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 
 class TuleapResourceOwner implements ResourceOwnerInterface {
 	/** @var string */
+	private $id;
+	/** @var string */
 	private $username;
 	/** @var string */
 	private $email;
@@ -22,6 +24,7 @@ class TuleapResourceOwner implements ResourceOwnerInterface {
 	 */
 	public static function factory( array $data ) {
 		return new static(
+			$data['sub'],
 			$data['preferred_username'],
 			$data['name'],
 			$data['email'],
@@ -31,13 +34,15 @@ class TuleapResourceOwner implements ResourceOwnerInterface {
 	}
 
 	/**
+	 * @param $id
 	 * @param string $username
 	 * @param string $realname
 	 * @param string $email
 	 * @param bool $emailVerified
 	 * @param string $locale
 	 */
-	public function __construct( $username, $realname, $email, $emailVerified, $locale ) {
+	public function __construct( $id, $username, $realname, $email, $emailVerified, $locale ) {
+		$this->id = $id;
 		$this->username = $username;
 		$this->realname = $realname;
 		$this->email = $email;
@@ -49,7 +54,7 @@ class TuleapResourceOwner implements ResourceOwnerInterface {
 	 * @return string
 	 */
 	public function getId() {
-		return $this->getUsername();
+		return $this->id;
 	}
 
 	/**
@@ -63,7 +68,7 @@ class TuleapResourceOwner implements ResourceOwnerInterface {
 	 * @return string
 	 */
 	public function getRealName() {
-		return $this->realname;
+		return $this->realname ?: $this->getUsername();
 	}
 
 	/**
