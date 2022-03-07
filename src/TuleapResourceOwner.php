@@ -34,7 +34,7 @@ class TuleapResourceOwner implements ResourceOwnerInterface {
 	}
 
 	/**
-	 * @param $id
+	 * @param string $id
 	 * @param string $username
 	 * @param string $realname
 	 * @param string $email

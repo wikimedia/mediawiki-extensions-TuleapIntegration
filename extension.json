@@ -27,15 +27,11 @@
 				"clientSecret": "",
 				"redirectUri": ""
 			}
-		},
-		"TuleapArtLinksGroupId": {
-			"value": null
 		}
 	},
 	"Hooks": {
 		"BeforeInitialize": "redirectToLogin",
 		"PersonalUrls": [ "removeManualLogin", "replaceUserLinks" ],
-		"OutputPageBeforeHTML": "addEntityLinks",
 		"HtmlPageLinkRendererEnd": "replaceUserLinks"
 	},
 	"HookHandlers": {
@@ -57,8 +53,11 @@
 	"SpecialPages": {
 		"TuleapLogin": {
 			"class": "TuleapIntegration\\Special\\TuleapLogin",
-			"services": [ "TitleFactory", "UserFactory", "UserOptionsManager" ]
+			"services": [ "TuleapConnection", "TitleFactory", "UserFactory", "UserOptionsManager" ]
 		}
 	},
+	"ServiceWiringFiles": [
+		"includes/ServiceWiring.php"
+	],
 	"manifest_version": 2
 }

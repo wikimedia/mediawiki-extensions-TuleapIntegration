@@ -10,10 +10,16 @@ class ReplaceUserLinks implements HtmlPageLinkRendererEndHook, PersonalUrlsHook 
 	/** @var UserFactory */
 	private $userFactory;
 
+	/**
+	 * @param UserFactory $userFactory
+	 */
 	public function __construct( UserFactory $userFactory ) {
 		$this->userFactory = $userFactory;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function onHtmlPageLinkRendererEnd(
 		$linkRenderer, $target, $isKnown, &$text, &$attribs, &$ret
 	) {
@@ -24,7 +30,7 @@ class ReplaceUserLinks implements HtmlPageLinkRendererEndHook, PersonalUrlsHook 
 			return true;
 		}
 		$user = $this->userFactory->newFromName( $target->getDBkey() );
-		if ( !( $user instanceof $user) || !$user->isRegistered() ) {
+		if ( !( $user instanceof $user ) || !$user->isRegistered() ) {
 			return true;
 		}
 		error_log( $user->getRealName() );
@@ -32,12 +38,15 @@ class ReplaceUserLinks implements HtmlPageLinkRendererEndHook, PersonalUrlsHook 
 		return true;
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function onPersonalUrls( &$personal_urls, &$title, $skin ): void {
 		if ( !isset( $personal_urls['userpage'] ) ) {
 			return;
 		}
 		$user = $this->userFactory->newFromName( $personal_urls['userpage']['text'] );
-		if ( !( $user instanceof $user) || !$user->isRegistered() ) {
+		if ( !( $user instanceof $user ) || !$user->isRegistered() ) {
 			return;
 		}
 		$personal_urls['userpage']['text'] = $user->getRealName();

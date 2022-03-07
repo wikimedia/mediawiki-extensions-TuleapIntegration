@@ -7,13 +7,13 @@ use MediaWiki\User\UserFactory;
 use MediaWiki\User\UserOptionsManager;
 use Title;
 use TitleFactory as TitleFactory;
-use TuleapIntegration\Provider\Tuleap;
+use TuleapIntegration\TuleapConnection;
 use TuleapIntegration\TuleapResourceOwner;
 use UnexpectedValueException;
 
 class TuleapLogin extends \SpecialPage {
-	/** @var Tuleap */
-	private $provider;
+	/** @var TuleapConnection */
+	private $tuleap;
 	/** @var TitleFactory */
 	private $titleFactory;
 	/** @var UserFactory */
@@ -22,16 +22,17 @@ class TuleapLogin extends \SpecialPage {
 	private $userOptionsManager;
 
 	/**
+	 * @param TuleapConnection $tuleap
 	 * @param TitleFactory $titleFactory
 	 * @param UserFactory $userFactory
 	 * @param UserOptionsManager $userOptionsManager
 	 */
 	public function __construct(
-		TitleFactory $titleFactory, UserFactory $userFactory,
-		UserOptionsManager $userOptionsManager
+		TuleapConnection $tuleap, TitleFactory $titleFactory,
+		UserFactory $userFactory, UserOptionsManager $userOptionsManager
 	) {
 		parent::__construct( 'TuleapLogin', '', false );
-		$this->provider = new Tuleap( $this->getConfig() );
+		$this->tuleap = $tuleap;
 		$this->titleFactory = $titleFactory;
 		$this->userFactory = $userFactory;
 		$this->userOptionsManager = $userOptionsManager;
@@ -51,15 +52,8 @@ class TuleapLogin extends \SpecialPage {
 			return $this->callback();
 		}
 
-		$this->getRequest()->getSession()->persist();
-		$this->getRequest()->getSession()->set( 'returnto', $this->getRequest()->getVal( 'returnto' ) );
-
-		$authorizationUrl = $this->provider->getAuthorizationUrl( [ 'scope' => 'profile email openid' ] );
-
-		$this->getRequest()->getSession()->set( 'tuleapOauth2state', $this->provider->getState() );
-		$this->getRequest()->getSession()->save();
-
-		$this->getOutput()->redirect( $authorizationUrl );
+		$url = $this->tuleap->getAuthorizationUrl( $this->getRequest()->getVal( 'returnto' ) );
+		$this->getOutput()->redirect( $url );
 
 		return true;
 	}
@@ -72,20 +66,8 @@ class TuleapLogin extends \SpecialPage {
 	 */
 	public function callback() {
 		try {
-			$storedState = $this->getRequest()->getSession()->get( 'tuleapOauth2state' );
-			$providedState = $this->getRequest()->getVal( 'state' );
-
-			if ( $storedState !== $providedState ) {
-				throw new \UnexpectedValueException(
-					'Provided state param in the callback does not match original state'
-				);
-			}
-
-			$accessToken = $this->provider->getAccessToken( 'authorization_code', [
-				'code' => $this->getRequest()->getVal( 'code' )
-			] );
-
-			$resourceOwner = $this->provider->getResourceOwner( $accessToken );
+			$this->tuleap->obtainAccessToken( $this->getRequest() );
+			$resourceOwner = $this->tuleap->getResourceOwner();
 			$this->setUser( $resourceOwner );
 			$this->redirectToReturnTo();
 		} catch ( IdentityProviderException | UnexpectedValueException | \Exception $e ) {
