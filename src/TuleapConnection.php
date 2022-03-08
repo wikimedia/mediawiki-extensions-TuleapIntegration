@@ -15,6 +15,8 @@ class TuleapConnection {
 	private $session;
 	/** @var AccessToken|null */
 	private $accessToken = null;
+	/** @var array|null */
+	private $integrationData = null;
 
 	/**
 	 * @param Tuleap $provider
@@ -79,6 +81,7 @@ class TuleapConnection {
 			)
 		] );
 
+		$this->session->set( 'tuleapOauth2AT', $this->accessToken->jsonSerialize() );
 		return $this->accessToken;
 	}
 
@@ -100,6 +103,42 @@ class TuleapConnection {
 
 	public function invalidateAccessToken() {
 		$this->accessToken = null;
+		// If this is being invoked, likely session is already killed
+		// but just in case, unset it here as well
+		$this->session->remove( 'tuleapOauth2AT' );
+	}
+
+	/**
+	 * @param int $project
+	 * @param string|null $key Specific key to retrieve
+	 * @param mixed $default Value to return in case requested key is not available
+	 * @return array
+	 * @throws IdentityProviderException
+	 */
+	public function getIntegrationData( $project, $key = null, $default = null ): array {
+		if ( $this->integrationData === null ) {
+			$this->integrationData = [];
+			$accessToken = $this->getAccessToken();
+			if ( !$accessToken ) {
+				throw new \Exception( 'Access token not yet obtained' );
+			}
+
+			$request = $this->provider->getRequest(
+				'GET',
+				$this->provider->compileUrl( "/api/projects/$project/3rd_party_integration_data" )
+			);
+			$response = $this->provider->getResponse( $request );
+			if ( $response->getStatusCode() !== 200 ) {
+				throw new \Exception( $response->getReasonPhrase() );
+			}
+			$this->integrationData = json_decode( $response->getBody()->getContents(), 1 );
+		}
+
+		if ( $key ) {
+			return $this->integrationData[$key] ?? $default;
+		}
+
+		return $this->integrationData;
 	}
 
 	/**
@@ -109,7 +148,7 @@ class TuleapConnection {
 	 * @throws IdentityProviderException
 	 */
 	private function getAccessToken(): ?AccessTokenInterface {
-		if ( !$this->accessToken ) {
+		if ( !$this->accessToken && !$this->trySetAccessTokenFromSession() ) {
 			return null;
 		}
 		if ( $this->accessToken->hasExpired() ) {
@@ -117,6 +156,16 @@ class TuleapConnection {
 		}
 
 		return $this->accessToken;
+	}
+
+	private function trySetAccessTokenFromSession() {
+		$token = $this->session->get( 'tuleapOauth2AT', null );
+		if ( !$token ) {
+			return false;
+		}
+
+		$this->accessToken = new AccessToken( $token );
+		return true;
 	}
 
 	/**

@@ -30,7 +30,6 @@ class Tuleap extends AbstractProvider {
 	public function __construct( Config $config ) {
 		$this->config = $config;
 		parent::__construct( $config->get( 'TuleapOAuth2Config' ), [
-			'verify' => true,
 			'optionProvider' => new HttpBasicAuthOptionProvider()
 		] );
 	}
@@ -47,7 +46,7 @@ class Tuleap extends AbstractProvider {
 	 * @throws Exception
 	 */
 	public function getBaseAuthorizationUrl() {
-		return $this->getBaseUrl() . '/oauth2/authorize';
+		return $this->compileUrl( '/oauth2/authorize' );
 	}
 
 	/**
@@ -56,7 +55,7 @@ class Tuleap extends AbstractProvider {
 	 * @throws Exception
 	 */
 	public function getBaseAccessTokenUrl( array $params ) {
-		return $this->getBaseUrl() . '/oauth2/token';
+		return $this->compileUrl( '/oauth2/token' );
 	}
 
 	/**
@@ -65,7 +64,7 @@ class Tuleap extends AbstractProvider {
 	 * @throws Exception
 	 */
 	public function getResourceOwnerDetailsUrl( AccessToken $token ) {
-		return $this->getBaseUrl() . '/oauth2/userinfo';
+		return $this->compileUrl( '/oauth2/userinfo' );
 	}
 
 	/**
@@ -115,6 +114,10 @@ class Tuleap extends AbstractProvider {
 			throw new Exception( 'Verify JWT: aud not valid' );
 		}
 
+		if ( !property_exists( $d, 'sub' ) ) {
+			throw new Exception( 'Verify JWT: sub claim missing' );
+		}
+
 		$nonce = $d->nonce ?? null;
 		if ( $nonce ) {
 			if ( !$this->session ) {
@@ -133,7 +136,7 @@ class Tuleap extends AbstractProvider {
 	 */
 	private function getJWTKeys() {
 		$keyResponse = $this->getResponse(
-			$this->getRequest( 'GET', $this->getBaseUrl() . '/oauth2/jwks' )
+			$this->getRequest( 'GET', $this->compileUrl( '/oauth2/jwks' ) )
 		);
 		if ( $keyResponse->getStatusCode() !== 200 ) {
 			throw new Exception( "Could not retrieve JWT public key" );
@@ -177,5 +180,14 @@ class Tuleap extends AbstractProvider {
 		}
 
 		return rtrim( $url, '/' );
+	}
+
+	/**
+	 * @param string $path
+	 * @return string
+	 * @throws Exception
+	 */
+	public function compileUrl( $path ) {
+		return $this->getBaseUrl() . $path;
 	}
 }
