@@ -14,6 +14,7 @@ use MediaWiki\Session\Session;
 use phpseclib3\Crypt\PublicKeyLoader;
 use phpseclib3\Math\BigInteger;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerInterface;
 use TuleapIntegration\TuleapResourceOwner;
 
 class Tuleap extends AbstractProvider {
@@ -21,14 +22,18 @@ class Tuleap extends AbstractProvider {
 
 	/** @var Config */
 	private $config;
+	/** @var LoggerInterface */
+	private $logger;
 	/** @var Session */
 	private $session;
 
 	/**
 	 * @param Config $config
+	 * @param LoggerInterface $logger
 	 */
-	public function __construct( Config $config ) {
+	public function __construct( Config $config, LoggerInterface $logger ) {
 		$this->config = $config;
+		$this->logger = $logger;
 		parent::__construct( $config->get( 'TuleapOAuth2Config' ), [
 			'optionProvider' => new HttpBasicAuthOptionProvider()
 		] );
@@ -92,6 +97,10 @@ class Tuleap extends AbstractProvider {
 			$this->verifyJWT( $data['id_token'] );
 		}
 		if ( $response->getStatusCode() !== 200 ) {
+			$this->logger->error( 'Response verification failed: {code} {reason}', [
+				'code' => $response->getStatusCode(),
+				'reason' => $response->getReasonPhrase(),
+			] );
 			throw new Exception( "Invalid response from Tuleap authentication" );
 		}
 	}
@@ -106,15 +115,24 @@ class Tuleap extends AbstractProvider {
 		$d = JWT::decode( $token, $this->getJWTKeys() );
 
 		if ( $d->iss !== $this->getBaseUrl() ) {
+			$this->logger->error( 'Verify JWT: iss not valid: iss={iss} expected={base}', [
+				'iss' => $d->iss,
+				'base' => $this->getBaseUrl(),
+			] );
 			throw new Exception( 'Verify JWT: iss not valid' );
 		}
 
 		$clientId = $this->config->get( 'TuleapOAuth2Config' )['clientId'] ?? null;
 		if ( $d->aud !== $clientId ) {
+			$this->logger->error( 'Verify JWT: iss not valid: aud={aud} expected={client}', [
+				'aud' => $d->aud,
+				'client' => $clientId,
+			] );
 			throw new Exception( 'Verify JWT: aud not valid' );
 		}
 
 		if ( !property_exists( $d, 'sub' ) ) {
+			$this->logger->error( 'Verify JWT: sub claim is missing' );
 			throw new Exception( 'Verify JWT: sub claim missing' );
 		}
 
@@ -139,6 +157,10 @@ class Tuleap extends AbstractProvider {
 			$this->getRequest( 'GET', $this->compileUrl( '/oauth2/jwks' ) )
 		);
 		if ( $keyResponse->getStatusCode() !== 200 ) {
+			$this->logger->error( 'Failed to retrive JWKS: {code} {reason}', [
+				'code' => $keyResponse->getStatusCode(),
+				'reason' => $keyResponse->getReasonPhrase(),
+			] );
 			throw new Exception( "Could not retrieve JWT public key" );
 		}
 		$keys = json_decode( $keyResponse->getBody(), 1 );
@@ -176,6 +198,7 @@ class Tuleap extends AbstractProvider {
 	private function getBaseUrl() {
 		$url = $this->config->get( 'TuleapUrl' );
 		if ( !$url ) {
+			$this->logger->error( 'Config variable \$wgTuleapUrl must be set' );
 			throw new Exception( 'Config variable \$wgTuleapUrl must be set' );
 		}
 

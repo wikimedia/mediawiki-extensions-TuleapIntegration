@@ -6,6 +6,7 @@ use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Token\AccessTokenInterface;
 use MediaWiki\Session\Session;
+use Psr\Log\LoggerInterface;
 use TuleapIntegration\Provider\Tuleap;
 
 class TuleapConnection {
@@ -13,6 +14,8 @@ class TuleapConnection {
 	private $provider;
 	/** @var Session */
 	private $session;
+	/** @var LoggerInterface */
+	private $logger;
 	/** @var AccessToken|null */
 	private $accessToken = null;
 	/** @var array|null */
@@ -21,11 +24,13 @@ class TuleapConnection {
 	/**
 	 * @param Tuleap $provider
 	 * @param Session $session
+	 * @param LoggerInterface $logger
 	 */
-	public function __construct( Tuleap $provider, Session $session ) {
+	public function __construct( Tuleap $provider, Session $session, LoggerInterface $logger ) {
 		$this->provider = $provider;
 		$this->provider->setSession( $session );
 		$this->session = $session;
+		$this->logger = $logger;
 	}
 
 	/**
@@ -69,6 +74,10 @@ class TuleapConnection {
 		$providedState = $request->getVal( 'state' );
 
 		if ( !hash_equals( $storedState, $providedState ) ) {
+			$this->logger->error( "State mismatch: provided={provided} expected={exp}", [
+				'provided' => $providedState,
+				'exp' => $storedState,
+			] );
 			throw new \UnexpectedValueException(
 				'Provided state param in the callback does not match original state'
 			);
@@ -91,21 +100,20 @@ class TuleapConnection {
 	 */
 	public function getResourceOwner(): TuleapResourceOwner {
 		if ( !$this->accessToken ) {
+			$this->logger->error(
+				"Attempted to retrieve resource owner before obtaining the access token"
+			);
 			throw new \Exception( 'Access token not yet obtained' );
 		}
 
 		$ro = $this->provider->getResourceOwner( $this->accessToken );
 		if ( !( $ro instanceof TuleapResourceOwner ) ) {
+			$this->logger->error(
+				"Failed to retrieve or cast resource owner"
+			);
 			throw new \Exception( 'Could not retrieve resource owner' );
 		}
 		return $ro;
-	}
-
-	public function invalidateAccessToken() {
-		$this->accessToken = null;
-		// If this is being invoked, likely session is already killed
-		// but just in case, unset it here as well
-		$this->session->remove( 'tuleapOauth2AT' );
 	}
 
 	/**
@@ -120,6 +128,9 @@ class TuleapConnection {
 			$this->integrationData = [];
 			$accessToken = $this->getAccessToken();
 			if ( !$accessToken ) {
+				$this->logger->error(
+					"Attempted to retrieve resource owner before obtaining the access token"
+				);
 				throw new \Exception( 'Access token not yet obtained' );
 			}
 

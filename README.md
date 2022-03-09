@@ -1,14 +1,6 @@
 # TuleapIntegration
 
-## Installation
-Execute
+This extension is indented to be deployed in Tuleap environment only!
 
-    composer require mediawiki/tuleap-integration ~1
-within MediaWiki root or add `mediawiki/tuleap-integration` to the
-`composer.json` file of your project
-
-## Activation
-Add
-
-    wfLoadExtension( 'TuleapIntegration' );
-to your `LocalSettings.php` file.
+## Logging
+Log of communication between the wiki and Tuleap is logged to `tuleap-connection` channel.
