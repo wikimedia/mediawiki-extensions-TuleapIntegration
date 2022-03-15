@@ -7,6 +7,8 @@ use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Token\AccessTokenInterface;
 use MediaWiki\Session\Session;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Process\ExecutableFinder;
+use Symfony\Component\Process\Process;
 use TuleapIntegration\Provider\Tuleap;
 
 class TuleapConnection {
@@ -52,7 +54,7 @@ class TuleapConnection {
 		$this->session->set( 'tuleapOauth2nonce', $nonce );
 
 		$url = $this->provider->getAuthorizationUrl( [
-			'scope' => 'profile email openid',
+			'scope' => 'profile email openid read:project',
 			'code_challenge' => $codeChallenge,
 			'code_challenge_method' => 'S256',
 			'nonce' => $nonce
@@ -60,6 +62,8 @@ class TuleapConnection {
 
 		$this->session->set( 'tuleapOauth2state', $this->provider->getState() );
 		$this->session->save();
+
+		$this->storeStateToGlobalStorage( $this->provider->getState() );
 
 		return $url;
 	}
@@ -134,9 +138,10 @@ class TuleapConnection {
 				throw new \Exception( 'Access token not yet obtained' );
 			}
 
-			$request = $this->provider->getRequest(
+			$request = $this->provider->getAuthenticatedRequest(
 				'GET',
-				$this->provider->compileUrl( "/api/projects/$project/3rd_party_integration_data" )
+				$this->provider->compileUrl( "/api/projects/$project/3rd_party_integration_data" ),
+				$accessToken->getToken()
 			);
 			$response = $this->provider->getResponse( $request );
 			if ( $response->getStatusCode() !== 200 ) {
@@ -201,5 +206,30 @@ class TuleapConnection {
 			hash( 'sha256', $this->session->getId(), true ),
 			SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING
 		);
+	}
+
+	/**
+	 * @param string $state
+	 * @throws \MWException
+	 */
+	private function storeStateToGlobalStorage( $state ) {
+		if ( FARMER_IS_ROOT_WIKI_CALL ) {
+			// No need to store state, as root is already the default target
+			return;
+		}
+		$phpBinaryFinder = new ExecutableFinder();
+		$phpBinaryPath = $phpBinaryFinder->find( 'php' );
+		// We must run this in isolation, as to not override globals, services...
+		$process = new Process( [
+			$phpBinaryPath,
+			$GLOBALS['IP'] . '/extensions/TuleapWikiFarm/maintenance/storeAuthInfo.php',
+			'--instanceName', FARMER_CALLED_INSTANCE,
+			'--state', $state,
+		] );
+
+		$process->run();
+		if ( $process->getExitCode() !== 0 ) {
+			throw new \MWException( 'Failed to store authentication state' );
+		}
 	}
 }

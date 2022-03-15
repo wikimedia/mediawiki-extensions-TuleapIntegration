@@ -27,6 +27,12 @@
 				"clientSecret": "",
 				"redirectUri": ""
 			}
+		},
+		"TuleapProjectId": {
+			"value": 0
+		},
+		"TuleapData": {
+			"value": {}
 		}
 	},
 	"Hooks": {

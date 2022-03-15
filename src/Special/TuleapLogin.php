@@ -51,7 +51,6 @@ class TuleapLogin extends \SpecialPage {
 		if ( $subPage === 'callback' ) {
 			return $this->callback();
 		}
-
 		$url = $this->tuleap->getAuthorizationUrl( $this->getRequest()->getVal( 'returnto' ) );
 		$this->getOutput()->redirect( $url );
 
