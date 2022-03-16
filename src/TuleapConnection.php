@@ -229,6 +229,10 @@ class TuleapConnection {
 
 		$process->run();
 		if ( $process->getExitCode() !== 0 ) {
+			$this->logger->error( 'Failed to store authentication state: {reason}', [
+				'reason' => $process->getErrorOutput()
+			] );
+			error_log( $process->getErrorOutput() );
 			throw new \MWException( 'Failed to store authentication state' );
 		}
 	}

@@ -33,7 +33,6 @@ class ReplaceUserLinks implements HtmlPageLinkRendererEndHook, PersonalUrlsHook 
 		if ( !( $user instanceof $user ) || !$user->isRegistered() ) {
 			return true;
 		}
-		error_log( $user->getRealName() );
 		$text = $user->getRealName();
 		return true;
 	}
