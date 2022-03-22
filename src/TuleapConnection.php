@@ -124,18 +124,18 @@ class TuleapConnection {
 	 * @param int $project
 	 * @param string|null $key Specific key to retrieve
 	 * @param mixed $default Value to return in case requested key is not available
-	 * @return array
+	 * @return mixed
 	 * @throws IdentityProviderException
 	 */
-	public function getIntegrationData( $project, $key = null, $default = null ): array {
+	public function getIntegrationData( $project, $key = null, $default = null ) {
 		if ( $this->integrationData === null ) {
 			$this->integrationData = [];
 			$accessToken = $this->getAccessToken();
 			if ( !$accessToken ) {
-				$this->logger->error(
+				$this->logger->warning(
 					"Attempted to retrieve resource owner before obtaining the access token"
 				);
-				throw new \Exception( 'Access token not yet obtained' );
+				return $this->integrationData;
 			}
 
 			$request = $this->provider->getAuthenticatedRequest(
