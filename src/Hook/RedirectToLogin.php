@@ -18,9 +18,6 @@ class RedirectToLogin implements BeforeInitializeHook {
 			return true;
 		}
 		$spf = MediaWiki\MediaWikiServices::getInstance()->getSpecialPageFactory();
-		$output->redirect(
-			$spf->getPage( 'TuleapLogin' )->getPageTitle()->getFullURL()
-		);
-		return true;
+		header( 'Location: ' . $spf->getPage( 'TuleapLogin' )->getPageTitle()->getFullURL() );
 	}
 }
