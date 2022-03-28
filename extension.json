@@ -33,22 +33,21 @@
 		},
 		"TuleapData": {
 			"value": {}
+		},
+		"TuleapEnableLocalLogin": {
+			"value": false,
+			"description": "If true, no Oauth auto-login will be executed"
 		}
 	},
 	"Hooks": {
-		"BeforeInitialize": "redirectToLogin",
-		"PersonalUrls": [ "removeManualLogin", "replaceUserLinks" ],
-		"HtmlPageLinkRendererEnd": "replaceUserLinks"
+		"BeforeInitialize": "setUpOauthLogin",
+		"PersonalUrls": [ "setUpOauthLogin", "replaceUserLinks" ],
+		"HtmlPageLinkRendererEnd": "replaceUserLinks",
+		"SpecialPage_initList": "setUpOauthLogin"
 	},
 	"HookHandlers": {
-		"redirectToLogin": {
-			"class": "TuleapIntegration\\Hook\\RedirectToLogin"
-		},
-		"removeManualLogin": {
-			"class": "TuleapIntegration\\Hook\\RemoveManualLogin"
-		},
-		"addEntityLinks": {
-			"class": "TuleapIntegration\\Hook\\AddEntityLinks",
+		"setUpOauthLogin": {
+			"class": "TuleapIntegration\\Hook\\SetUpOauthLogin",
 			"services": [ "MainConfig" ]
 		},
 		"replaceUserLinks": {
