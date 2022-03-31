@@ -7,7 +7,6 @@ use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Token\AccessTokenInterface;
 use MediaWiki\Session\Session;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
 use TuleapIntegration\Provider\Tuleap;
 
@@ -129,25 +128,29 @@ class TuleapConnection {
 	 */
 	public function getIntegrationData( $project, $key = null, $default = null ) {
 		if ( $this->integrationData === null ) {
-			$this->integrationData = [];
-			$accessToken = $this->getAccessToken();
-			if ( !$accessToken ) {
-				$this->logger->warning(
-					"Attempted to retrieve resource owner before obtaining the access token"
-				);
-				return $this->integrationData;
-			}
+			$this->integrationData = $this->session->get( 'tuleap-integration-data' );
+			if ( $this->integrationData === null ) {
+				$this->integrationData = [];
+				$accessToken = $this->getAccessToken();
+				if ( !$accessToken ) {
+					$this->logger->warning(
+						"Attempted to retrieve resource owner before obtaining the access token"
+					);
+					return $this->integrationData;
+				}
 
-			$request = $this->provider->getAuthenticatedRequest(
-				'GET',
-				$this->provider->compileUrl( "/api/projects/$project/3rd_party_integration_data" ),
-				$accessToken->getToken()
-			);
-			$response = $this->provider->getResponse( $request );
-			if ( $response->getStatusCode() !== 200 ) {
-				throw new \Exception( $response->getReasonPhrase() );
+				$request = $this->provider->getAuthenticatedRequest(
+					'GET',
+					$this->provider->compileUrl( "/api/projects/$project/3rd_party_integration_data" ),
+					$accessToken->getToken()
+				);
+				$response = $this->provider->getResponse( $request );
+				if ( $response->getStatusCode() !== 200 ) {
+					throw new \Exception( $response->getReasonPhrase() );
+				}
+				$this->integrationData = json_decode( $response->getBody()->getContents(), 1 );
+				$this->session->set( 'tuleap-integration-data', $this->integrationData );
 			}
-			$this->integrationData = json_decode( $response->getBody()->getContents(), 1 );
 		}
 
 		if ( $key ) {
@@ -168,7 +171,8 @@ class TuleapConnection {
 			return null;
 		}
 		if ( $this->accessToken->hasExpired() ) {
-			$this->refreshAccessToken();
+			// Cannot refresh
+			return null;
 		}
 
 		return $this->accessToken;
@@ -182,19 +186,6 @@ class TuleapConnection {
 
 		$this->accessToken = new AccessToken( $token );
 		return true;
-	}
-
-	/**
-	 * @throws IdentityProviderException
-	 */
-	private function refreshAccessToken() {
-		$this->accessToken = $this->provider->getAccessToken( 'refresh_token', [
-			'refresh_token' => $this->accessToken->getRefreshToken(),
-			// Do we need this for RT grant?
-			'code_verifier' => $this->session->get(
-				'tuleapOauth2codeVerifier'
-			)
-		] );
 	}
 
 	/**
@@ -217,8 +208,7 @@ class TuleapConnection {
 			// No need to store state, as root is already the default target
 			return;
 		}
-		$phpBinaryFinder = new ExecutableFinder();
-		$phpBinaryPath = $phpBinaryFinder->find( 'php' );
+		$phpBinaryPath = $this->provider->getConfig()->get( 'PhpCli' );
 		// We must run this in isolation, as to not override globals, services...
 		$process = new Process( [
 			$phpBinaryPath,
@@ -232,7 +222,6 @@ class TuleapConnection {
 			$this->logger->error( 'Failed to store authentication state: {reason}', [
 				'reason' => $process->getErrorOutput()
 			] );
-			error_log( $process->getErrorOutput() );
 			throw new \MWException( 'Failed to store authentication state' );
 		}
 	}

@@ -213,4 +213,11 @@ class Tuleap extends AbstractProvider {
 	public function compileUrl( $path ) {
 		return $this->getBaseUrl() . $path;
 	}
+
+	/**
+	 * @return Config
+	 */
+	public function getConfig() {
+		return $this->config;
+	}
 }
