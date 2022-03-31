@@ -4,6 +4,7 @@ namespace TuleapIntegration\Provider;
 
 use Config;
 use Exception;
+use Firebase\JWT\JWK;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use League\OAuth2\Client\OptionProvider\HttpBasicAuthOptionProvider;
@@ -137,20 +138,17 @@ class Tuleap extends AbstractProvider {
 		}
 
 		$nonce = $d->nonce ?? null;
-		if ( $nonce ) {
-			if ( !$this->session ) {
-				throw new Exception( 'Session must be set before obtaining AccessToken' );
-			}
-			$storedNonce = $this->session->get( 'tuleapOauth2nonce' );
-			if ( !hash_equals( $nonce, $storedNonce ) ) {
-				throw new Exception( 'Verify JWT: nonce does not match' );
-			}
+		if ( !$this->session ) {
+			throw new Exception( 'Session must be set before obtaining AccessToken' );
+		}
+		$storedNonce = $this->session->get( 'tuleapOauth2nonce' );
+		if ( !$nonce || !hash_equals( $nonce, $storedNonce ) ) {
+			throw new Exception( 'Verify JWT: nonce does not match' );
 		}
 	}
 
 	/**
 	 * @return array
-	 * @throws \SodiumException
 	 */
 	private function getJWTKeys() {
 		$keyResponse = $this->getResponse(
@@ -164,22 +162,7 @@ class Tuleap extends AbstractProvider {
 			throw new Exception( "Could not retrieve JWT public key" );
 		}
 		$keys = json_decode( $keyResponse->getBody(), 1 );
-		$res = [];
-		foreach ( $keys['keys'] as $keyData ) {
-			if ( $keyData['kty'] !== 'RSA' ) {
-				// Dont know how to handle other types
-				continue;
-			}
-			$modulus = sodium_base642bin( $keyData['n'], SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING );
-			$exponent = sodium_base642bin( $keyData['e'], SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING );
-			$key = PublicKeyLoader::loadPublicKey( [
-				'e' => new BigInteger( $exponent, 256 ),
-				'n' => new BigInteger( $modulus, 256 ),
-			] );
-
-			$res[$keyData['kid']] = new Key( $key->toString( 'pkcs8' ), $keyData['alg'] );
-		}
-		return $res;
+		return JWK::parseKeySet( $keys );
 	}
 
 	/**

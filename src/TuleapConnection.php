@@ -194,7 +194,7 @@ class TuleapConnection {
 	 */
 	private function getNonce() {
 		return sodium_bin2base64(
-			hash( 'sha256', $this->session->getId(), true ),
+			random_bytes(32),
 			SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING
 		);
 	}
