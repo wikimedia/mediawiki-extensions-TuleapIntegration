@@ -34,8 +34,13 @@ class SetUpOauthLogin implements BeforeInitializeHook, SpecialPage_initListHook,
 		if ( $title->isSpecial( 'TuleapLogin' ) || $title->isSpecial( 'Logout' ) ) {
 			return;
 		}
+		$returnto = '';
+		if ( $title instanceof Title ) {
+			$returnto = $title->getPrefixedDBkey();
+		}
 		$spf = MediaWiki\MediaWikiServices::getInstance()->getSpecialPageFactory();
-		header( 'Location: ' . $spf->getPage( 'TuleapLogin' )->getPageTitle()->getFullURL() );
+		header( 'Location: ' . $spf->getPage( 'TuleapLogin' )->getPageTitle()
+				->getFullURL( [ 'returnto' => $returnto ] ) );
 	}
 
 	/**
