@@ -4,14 +4,26 @@ namespace TuleapIntegration\Special;
 
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use MediaWiki\User\UserFactory;
+use MediaWiki\User\UserGroupManager;
 use MediaWiki\User\UserOptionsManager;
 use Title;
 use TitleFactory as TitleFactory;
 use TuleapIntegration\TuleapConnection;
 use TuleapIntegration\TuleapResourceOwner;
 use UnexpectedValueException;
+use User;
 
 class TuleapLogin extends \SpecialPage {
+	/**
+	 * @var string[]
+	 */
+	private $groupMapping = [
+		'is_reader' => 'reader',
+		'is_writer' => 'editor',
+		'is_admin' => 'sysop',
+		'is_bot' => 'bot'
+	];
+
 	/** @var TuleapConnection */
 	private $tuleap;
 	/** @var TitleFactory */
@@ -20,22 +32,26 @@ class TuleapLogin extends \SpecialPage {
 	private $userFactory;
 	/** @var UserOptionsManager */
 	private $userOptionsManager;
+	/** @var UserGroupManager */
+	private $groupManager;
 
 	/**
 	 * @param TuleapConnection $tuleap
 	 * @param TitleFactory $titleFactory
 	 * @param UserFactory $userFactory
 	 * @param UserOptionsManager $userOptionsManager
+	 * @param UserGroupManager $groupManager
 	 */
 	public function __construct(
-		TuleapConnection $tuleap, TitleFactory $titleFactory,
-		UserFactory $userFactory, UserOptionsManager $userOptionsManager
+		TuleapConnection $tuleap, TitleFactory $titleFactory, UserFactory $userFactory,
+		UserOptionsManager $userOptionsManager, UserGroupManager $groupManager
 	) {
 		parent::__construct( 'TuleapLogin', '', false );
 		$this->tuleap = $tuleap;
 		$this->titleFactory = $titleFactory;
 		$this->userFactory = $userFactory;
 		$this->userOptionsManager = $userOptionsManager;
+		$this->groupManager = $groupManager;
 	}
 
 	/**
@@ -83,7 +99,7 @@ class TuleapLogin extends \SpecialPage {
 	 * Set session
 	 *
 	 * @param TuleapResourceOwner $owner
-	 * @return bool|\User
+	 * @return bool|User
 	 * @throws \MWException
 	 */
 	private function setUser( TuleapResourceOwner $owner ) {
@@ -100,7 +116,7 @@ class TuleapLogin extends \SpecialPage {
 		if ( $owner->getLocale() ) {
 			$this->userOptionsManager->setOption( $user, 'language', $owner->getLocale() );
 		}
-
+		$this->setUserGroups( $user );
 		$user->setToken();
 
 		$this->getRequest()->getSession()->persist();
@@ -109,10 +125,36 @@ class TuleapLogin extends \SpecialPage {
 		$user->saveSettings();
 
 		$GLOBALS['wgUser'] = $user;
-		$sessionUser = \User::newFromSession( $this->getRequest() );
+		$sessionUser = User::newFromSession( $this->getRequest() );
 		$sessionUser->load();
 
 		return $user;
+	}
+
+	/**
+	 * Assign users to appropriate groups
+	 *
+	 * @param User $user
+	 * @throws IdentityProviderException
+	 */
+	private function setUserGroups( User $user ) {
+		$projectId = $this->getConfig()->get( 'TuleapProjectId' );
+
+		$data = $this->tuleap->getPermissionConfig( $projectId );
+		if ( !isset( $data['permissions'] ) ) {
+			return;
+		}
+		foreach ( $data['permissions'] as $key => $value ) {
+			if ( !isset( $this->groupMapping[$key] ) ) {
+				continue;
+			}
+			$group = $this->groupMapping[$key];
+			if ( $value ) {
+				$this->groupManager->addUserToGroup( $user, $group );
+			} else {
+				$this->groupManager->removeUserFromGroup( $user, $group );
+			}
+		}
 	}
 
 	/**
