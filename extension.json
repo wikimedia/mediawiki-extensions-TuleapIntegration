@@ -13,6 +13,9 @@
 	"MessagesDirs": {
 		"TuleapIntegration": "i18n"
 	},
+	"ExtensionMessagesFiles": {
+		"TuleapIntegration": "includes/TuleapIntegration.alias.php"
+	},
 	"AutoloadNamespaces": {
 		"TuleapIntegration\\": "src/",
 		"TuleapIntegration\\Tests\\": "tests/phpunit"
