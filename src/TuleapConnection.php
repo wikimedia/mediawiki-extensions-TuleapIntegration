@@ -53,7 +53,7 @@ class TuleapConnection {
 		$this->session->set( 'tuleapOauth2nonce', $nonce );
 
 		$url = $this->provider->getAuthorizationUrl( [
-			'scope' => 'profile email openid read:project',
+			'scope' => 'profile email openid read:project read:mediawiki_standalone',
 			'code_challenge' => $codeChallenge,
 			'code_challenge_method' => 'S256',
 			'nonce' => $nonce

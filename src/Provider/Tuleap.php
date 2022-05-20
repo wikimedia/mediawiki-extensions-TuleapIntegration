@@ -49,7 +49,7 @@ class Tuleap extends AbstractProvider {
 	 * @throws Exception
 	 */
 	public function getBaseAuthorizationUrl() {
-		return $this->compileUrl( '/oauth2/authorize' );
+		return $this->compileUrl( '/mediawiki_standalone/oauth2_authorize' );
 	}
 
 	/**
@@ -75,13 +75,11 @@ class Tuleap extends AbstractProvider {
 	 */
 	protected function getDefaultScopes() {
 		return [
-			"read:project",
-			"read:user_membership",
-			"read:tracker",
-			"offline_access",
-			"openid",
-			"email",
-			"profile"
+            "openid",
+            "email",
+            "profile",
+            "read:project",
+            "read:mediawiki_standalone"
 		];
 	}
 
