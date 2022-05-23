@@ -75,11 +75,11 @@ class Tuleap extends AbstractProvider {
 	 */
 	protected function getDefaultScopes() {
 		return [
-            "openid",
-            "email",
-            "profile",
-            "read:project",
-            "read:mediawiki_standalone"
+			"openid",
+			"email",
+			"profile",
+			"read:project",
+			"read:mediawiki_standalone"
 		];
 	}
 
