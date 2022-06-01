@@ -14,7 +14,7 @@
 		"TuleapIntegration": "i18n"
 	},
 	"ExtensionMessagesFiles": {
-		"TuleapIntegration": "includes/TuleapIntegration.alias.php"
+		"TuleapIntegrationAlias": "includes/TuleapIntegration.alias.php"
 	},
 	"AutoloadNamespaces": {
 		"TuleapIntegration\\": "src/",
@@ -67,5 +67,6 @@
 	"ServiceWiringFiles": [
 		"includes/ServiceWiring.php"
 	],
+	"load_composer_autoloader": true,
 	"manifest_version": 2
 }
