@@ -17,8 +17,7 @@
 		"TuleapIntegrationAlias": "includes/TuleapIntegration.alias.php"
 	},
 	"AutoloadNamespaces": {
-		"TuleapIntegration\\": "src/",
-		"TuleapIntegration\\Tests\\": "tests/phpunit"
+		"TuleapIntegration\\": "src/"
 	},
 	"config": {
 		"TuleapUrl": {
