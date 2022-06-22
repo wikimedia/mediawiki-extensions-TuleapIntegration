@@ -163,6 +163,32 @@ class TuleapConnection {
 	}
 
 	/**
+	 * @param int $project
+	 * @return array|mixed
+	 * @throws IdentityProviderException
+	 */
+	public function getPermissionConfig( $project ) {
+		$accessToken = $this->getAccessToken();
+		if ( !$accessToken ) {
+			$this->logger->warning(
+				"Attempted to retrieve resource owner before obtaining the access token"
+			);
+			return [];
+		}
+
+		$request = $this->provider->getAuthenticatedRequest(
+			'GET',
+			$this->provider->compileUrl( "/api/projects/$project/mediawiki_standalone_permissions" ),
+			$accessToken->getToken()
+		);
+		$response = $this->provider->getResponse( $request );
+		if ( $response->getStatusCode() !== 200 ) {
+			throw new \Exception( $response->getReasonPhrase() );
+		}
+		return json_decode( $response->getBody()->getContents(), 1 );
+	}
+
+	/**
 	 * Currently unused, needed for the future
 	 *
 	 * @return AccessTokenInterface|null

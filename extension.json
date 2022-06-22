@@ -77,7 +77,7 @@
 	"SpecialPages": {
 		"TuleapLogin": {
 			"class": "TuleapIntegration\\Special\\TuleapLogin",
-			"services": [ "TuleapConnection", "TitleFactory", "UserFactory", "UserOptionsManager" ]
+			"services": [ "TuleapConnection", "TitleFactory", "UserFactory", "UserOptionsManager", "UserGroupManager" ]
 		}
 	},
 	"ServiceWiringFiles": [
