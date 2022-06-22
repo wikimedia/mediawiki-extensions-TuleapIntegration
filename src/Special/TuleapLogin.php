@@ -112,6 +112,9 @@ class TuleapLogin extends \SpecialPage {
 		$sessionUser = \User::newFromSession( $this->getRequest() );
 		$sessionUser->load();
 
+		// Retrieve required data and store to session
+		$this->tuleap->getIntegrationData( $this->getConfig()->get( 'TuleapProjectId' ) );
+
 		return $user;
 	}
 
