@@ -139,10 +139,11 @@ class TuleapConnection {
 					return $this->integrationData;
 				}
 
+				$queryString = "currently_active_service=plugin_mediawiki_standalone";
 				$request = $this->provider->getAuthenticatedRequest(
 					'GET',
 					$this->provider->compileUrl(
-						"/api/projects/$project/3rd_party_integration_data?currently_active_service=plugin_mediawiki_standalone"
+						"/api/projects/$project/3rd_party_integration_data?$queryString"
 					),
 					$accessToken->getToken()
 				);

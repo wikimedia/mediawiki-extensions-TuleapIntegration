@@ -2,6 +2,7 @@
 
 namespace TuleapIntegration;
 
+// phpcs:disable Generic.Files.LineLength.TooLong
 use Config;
 use Exception;
 use Html;
@@ -31,13 +32,12 @@ class ReferenceManager implements OutputPageBeforeHTMLHook, BeforePageDisplayHoo
 
 	/**
 	 * @param OutputPage $out
-	 * @param string $text
+	 * @param string &$text
 	 * @return bool|void
 	 */
 	public function onOutputPageBeforeHTML( $out, &$text ) {
 		$text = $this->renderReferences( $text );
 	}
-
 
 	/**
 	 * @param OutputPage $out
@@ -105,10 +105,10 @@ class ReferenceManager implements OutputPageBeforeHTMLHook, BeforePageDisplayHoo
 			throw new Exception( 'TuleapUrl not set' );
 		}
 		$project = rtrim( $match['project_name'], ':' );
-		if( empty( $project ) ) {
+		if ( empty( $project ) ) {
 			$project = $this->config->get( 'TuleapProjectId' );
 		}
-		return wfAppendQuery(  $base . 'goto', [
+		return wfAppendQuery( $base . 'goto', [
 			'key' => $match['key'],
 			'val' => $match['value'],
 			'group_id' => $project
@@ -123,7 +123,7 @@ class ReferenceManager implements OutputPageBeforeHTMLHook, BeforePageDisplayHoo
 		if ( !is_array( $integrationData ) || !isset( $integrationData['references'] ) ) {
 			return [];
 		}
-		return array_map( static function( $reference ) {
+		return array_map( static function ( $reference ) {
 			return $reference['keyword'];
 		}, $integrationData['references'] );
 	}
