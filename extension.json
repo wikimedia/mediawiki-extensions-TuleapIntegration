@@ -45,7 +45,9 @@
 		"BeforeInitialize": "setUpOauthLogin",
 		"PersonalUrls": [ "setUpOauthLogin", "replaceUserLinks" ],
 		"HtmlPageLinkRendererEnd": "replaceUserLinks",
-		"SpecialPage_initList": "setUpOauthLogin"
+		"SpecialPage_initList": "setUpOauthLogin",
+		"OutputPageBeforeHTML": "replaceLinks",
+		"BeforePageDisplay": "replaceLinks"
 	},
 	"HookHandlers": {
 		"setUpOauthLogin": {
@@ -55,12 +57,27 @@
 		"replaceUserLinks": {
 			"class": "TuleapIntegration\\Hook\\ReplaceUserLinks",
 			"services": [ "UserFactory" ]
+		},
+		"replaceLinks": {
+			"class": "TuleapIntegration\\ReferenceManager",
+			"services": [ "TuleapConnection", "MainConfig" ]
 		}
+	},
+	"ResourceModules": {
+		"ext.tuleap.forcereload.js": {
+			"scripts": [
+				"reloadAfterEdit.js"
+			]
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "resources/",
+		"remoteExtPath": "TuleapIntegration/resources"
 	},
 	"SpecialPages": {
 		"TuleapLogin": {
 			"class": "TuleapIntegration\\Special\\TuleapLogin",
-			"services": [ "TuleapConnection", "TitleFactory", "UserFactory", "UserOptionsManager" ]
+			"services": [ "TuleapConnection", "TitleFactory", "UserFactory", "UserOptionsManager", "UserGroupManager" ]
 		}
 	},
 	"ServiceWiringFiles": [
