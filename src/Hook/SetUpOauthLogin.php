@@ -13,19 +13,22 @@ use Title;
 class SetUpOauthLogin implements BeforeInitializeHook, SpecialPage_initListHook, PersonalUrlsHook {
 	/** @var bool */
 	private $enableLocalLogin;
+	/** @var bool */
+	private $enableAnonAccess;
 
 	/**
 	 * @param Config $config
 	 */
 	public function __construct( Config $config ) {
 		$this->enableLocalLogin = (bool)$config->get( 'TuleapEnableLocalLogin' );
+		$this->enableAnonAccess = (bool)$config->get( 'TuleapEnableAnonAccess' );
 	}
 
 	/**
 	 * @inheritDoc
 	 */
 	public function onBeforeInitialize( $title, $unused, $output, $user, $request, $mediaWiki ) {
-		if ( $this->enableLocalLogin ) {
+		if ( $this->enableLocalLogin || $this->enableAnonAccess ) {
 			return;
 		}
 		if ( $user->isRegistered() ) {
@@ -65,12 +68,20 @@ class SetUpOauthLogin implements BeforeInitializeHook, SpecialPage_initListHook,
 		if ( $this->enableLocalLogin ) {
 			return;
 		}
-
-		if ( isset( $personal_urls['login'] ) ) {
-			unset( $personal_urls['login'] );
-		}
 		if ( isset( $personal_urls['logout'] ) ) {
 			unset( $personal_urls['logout'] );
+		}
+		if ( !isset( $personal_urls['login'] ) ) {
+			return;
+		}
+		if ( $this->enableAnonAccess ) {
+			$personal_urls['login']['text'] = \Message::newFromKey( 'tuleap-login-button' )->text();
+
+			$spf = MediaWiki\MediaWikiServices::getInstance()->getSpecialPageFactory();
+			$loginPage = $spf->getPage( 'TuleapLogin' )->getPageTitle();
+			$personal_urls['login']['href'] = $loginPage->getLocalURL();
+		} else {
+			unset( $personal_urls['login'] );
 		}
 	}
 }
