@@ -115,6 +115,7 @@ class TuleapLogin extends \SpecialPage {
 		}
 		if ( $owner->getLocale() ) {
 			$this->userOptionsManager->setOption( $user, 'language', $owner->getLocale() );
+			$this->userOptionsManager->saveOptions( $user );
 		}
 		$this->setUserGroups( $user );
 		$user->setToken();
