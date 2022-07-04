@@ -108,7 +108,7 @@ class ReferenceManager implements OutputPageBeforeHTMLHook, BeforePageDisplayHoo
 		if ( empty( $project ) ) {
 			$project = $this->config->get( 'TuleapProjectId' );
 		}
-		return wfAppendQuery( $base . 'goto', [
+		return wfAppendQuery( rtrim( $base, '/' ) . '/goto', [
 			'key' => $match['key'],
 			'val' => $match['value'],
 			'group_id' => $project
