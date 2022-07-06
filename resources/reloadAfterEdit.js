@@ -1,3 +1,4 @@
 mw.hook( 'postEdit' ).add( function ( $content ) {
-	location.reload();
+	var title = mw.Title.newFromText( mw.config.get( 'wgPageName' ) );
+	window.location.href = title.getUrl();
 } );
