@@ -1,5 +1,6 @@
 {
 	"tuleapintegration-desc": "Integrates MediaWiki into Tuleap",
 	"tuleap-login-error": "Login error",
-	"tuleap-login-error-desc": "An error occurred while trying to authenticate against Tuleap. Please contact Tuleap administrator"
+	"tuleap-login-error-desc": "An error occurred while trying to authenticate against Tuleap. Please contact a Tuleap administrator.",
+	"tuleap-login-button": "Log in using Tuleap"
 }
