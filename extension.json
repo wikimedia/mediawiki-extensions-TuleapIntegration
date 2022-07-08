@@ -37,7 +37,7 @@
 			"value": {}
 		},
 		"TuleapEnableLocalLogin": {
-			"value": false,
+			"value": true,
 			"description": "If true, no Oauth auto-login will be executed"
 		},
 		"TuleapEnableAnonAccess": {
