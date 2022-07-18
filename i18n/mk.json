@@ -6,5 +6,6 @@
 	},
 	"tuleapintegration-desc": "Го вклопува МедијаВики во Tuleap",
 	"tuleap-login-error": "Грешка при најавувањето",
-	"tuleap-login-error-desc": "Се појави грешка при обидот за заверка кај Tuleap. Обратете се кај администратор на Tuleap"
+	"tuleap-login-error-desc": "Се појави грешка при обидот за заверка кај Tuleap. Обратете се кај администратор на Tuleap",
+	"tuleap-login-button": "Најава со Tuleap"
 }
