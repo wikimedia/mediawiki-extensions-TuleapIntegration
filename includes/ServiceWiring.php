@@ -4,6 +4,7 @@ use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use TuleapIntegration\Provider\Tuleap;
 use TuleapIntegration\TuleapConnection;
+use TuleapIntegration\UserMappingProvider;
 
 return [
 	'TuleapConnection' => static function ( MediaWikiServices $services ) {
@@ -15,5 +16,11 @@ return [
 			RequestContext::getMain()->getRequest()->getSession(),
 			$logger
 		);
-	}
+	},
+	'TuleapUserMappingProvider' => static function ( MediaWikiServices $services ) {
+		return new UserMappingProvider(
+			$services->getDBLoadBalancer(),
+			$services->getUserFactory()
+		);
+	},
 ];
