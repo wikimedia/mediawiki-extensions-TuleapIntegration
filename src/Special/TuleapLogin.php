@@ -10,6 +10,7 @@ use Title;
 use TitleFactory as TitleFactory;
 use TuleapIntegration\TuleapConnection;
 use TuleapIntegration\TuleapResourceOwner;
+use TuleapIntegration\UserMappingProvider;
 use UnexpectedValueException;
 use User;
 
@@ -34,6 +35,10 @@ class TuleapLogin extends \SpecialPage {
 	private $userOptionsManager;
 	/** @var UserGroupManager */
 	private $groupManager;
+	/**
+	 * @var UserMappingProvider
+	 */
+	private $userMappingProvider;
 
 	/**
 	 * @param TuleapConnection $tuleap
@@ -41,10 +46,12 @@ class TuleapLogin extends \SpecialPage {
 	 * @param UserFactory $userFactory
 	 * @param UserOptionsManager $userOptionsManager
 	 * @param UserGroupManager $groupManager
+	 * @param UserMappingProvider $userMappingProvider
 	 */
 	public function __construct(
 		TuleapConnection $tuleap, TitleFactory $titleFactory, UserFactory $userFactory,
-		UserOptionsManager $userOptionsManager, UserGroupManager $groupManager
+		UserOptionsManager $userOptionsManager, UserGroupManager $groupManager,
+		UserMappingProvider $userMappingProvider
 	) {
 		parent::__construct( 'TuleapLogin', '', false );
 		$this->tuleap = $tuleap;
@@ -52,6 +59,7 @@ class TuleapLogin extends \SpecialPage {
 		$this->userFactory = $userFactory;
 		$this->userOptionsManager = $userOptionsManager;
 		$this->groupManager = $groupManager;
+		$this->userMappingProvider = $userMappingProvider;
 	}
 
 	/**
@@ -103,7 +111,11 @@ class TuleapLogin extends \SpecialPage {
 	 * @throws \MWException
 	 */
 	private function setUser( TuleapResourceOwner $owner ) {
-		$user = $this->userFactory->newFromName( $owner->getId() );
+		$legacyUser = $this->userMappingProvider->provideUserForId( $owner->getId() );
+		if ( !( $legacyUser instanceof User ) ) {
+			$user = $this->userFactory->newFromName( $owner->getId() );
+		}
+
 		$user->setRealName( $owner->getRealName() );
 		$user->setEmail( $owner->getEmail() );
 		$user->load();
