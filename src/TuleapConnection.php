@@ -36,10 +36,13 @@ class TuleapConnection {
 
 	/**
 	 * @param string $returnTo
+	 * @param bool $prompt
+	 *
 	 * @return string
+	 * @throws \MWException
 	 * @throws \SodiumException
 	 */
-	public function getAuthorizationUrl( $returnTo = '' ) {
+	public function getAuthorizationUrl( $returnTo = '', bool $prompt = true ) {
 		$this->session->persist();
 		$this->session->set( 'returnto', $returnTo );
 
@@ -52,12 +55,16 @@ class TuleapConnection {
 		$nonce = $this->getNonce();
 		$this->session->set( 'tuleapOauth2nonce', $nonce );
 
-		$url = $this->provider->getAuthorizationUrl( [
+		$params = [
 			'scope' => 'profile email openid read:project read:mediawiki_standalone',
 			'code_challenge' => $codeChallenge,
 			'code_challenge_method' => 'S256',
-			'nonce' => $nonce
-		] );
+			'nonce' => $nonce,
+		];
+		if ( $prompt === false ) {
+			$params['prompt'] = 'none';
+		}
+		$url = $this->provider->getAuthorizationUrl( $params );
 
 		$this->session->set( 'tuleapOauth2state', $this->provider->getState() );
 		$this->session->save();
@@ -132,11 +139,9 @@ class TuleapConnection {
 			if ( $this->integrationData === null ) {
 				$this->integrationData = [];
 				$accessToken = $this->getAccessToken();
-				if ( !$accessToken ) {
-					$this->logger->warning(
-						"Attempted to retrieve resource owner before obtaining the access token"
-					);
-					return $this->integrationData;
+				$accessTokenValue = '';
+				if ( $accessToken instanceof AccessTokenInterface ) {
+					$accessTokenValue = $accessToken->getToken();
 				}
 
 				$queryString = "currently_active_service=plugin_mediawiki_standalone";
@@ -145,7 +150,7 @@ class TuleapConnection {
 					$this->provider->compileUrl(
 						"/api/projects/$project/3rd_party_integration_data?$queryString"
 					),
-					$accessToken->getToken()
+					$accessTokenValue
 				);
 				$response = $this->provider->getResponse( $request );
 				if ( $response->getStatusCode() !== 200 ) {
