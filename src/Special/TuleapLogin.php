@@ -35,10 +35,10 @@ class TuleapLogin extends \SpecialPage {
 	private $userOptionsManager;
 	/** @var UserGroupManager */
 	private $groupManager;
-	/**
-	 * @var UserMappingProvider
-	 */
+	/** @var UserMappingProvider */
 	private $userMappingProvider;
+	/** @var bool */
+	private $enableAnonAccess;
 
 	/**
 	 * @param TuleapConnection $tuleap
@@ -60,6 +60,7 @@ class TuleapLogin extends \SpecialPage {
 		$this->userOptionsManager = $userOptionsManager;
 		$this->groupManager = $groupManager;
 		$this->userMappingProvider = $userMappingProvider;
+		$this->enableAnonAccess = $this->getConfig()->get( 'TuleapAccessPreset' ) === 'anonymous';
 	}
 
 	/**
@@ -75,7 +76,10 @@ class TuleapLogin extends \SpecialPage {
 		if ( $subPage === 'callback' ) {
 			return $this->callback();
 		}
-		$url = $this->tuleap->getAuthorizationUrl( $this->getRequest()->getVal( 'returnto' ) );
+		$url = $this->tuleap->getAuthorizationUrl(
+			$this->getRequest()->getVal( 'returnto' ),
+			!$this->enableAnonAccess || $this->getRequest()->getBool( 'prompt' )
+		);
 		$this->getOutput()->redirect( $url );
 
 		return true;
@@ -88,6 +92,13 @@ class TuleapLogin extends \SpecialPage {
 	 * @throws \MWException
 	 */
 	public function callback() {
+		$loginRequiredAnon = $this->getRequest()->getText( 'error' ) === 'login_required';
+		// Login is required, but anons can access the wiki, so allow them
+		if ( $loginRequiredAnon && $this->enableAnonAccess ) {
+			$this->getRequest()->getSession()->set( 'tuleap-anon-auth-done', true );
+			$this->redirectToMainPage();
+			return true;
+		}
 		try {
 			$this->tuleap->obtainAccessToken( $this->getRequest() );
 			$resourceOwner = $this->tuleap->getResourceOwner();
