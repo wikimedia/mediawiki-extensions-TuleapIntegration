@@ -1,8 +1,12 @@
 {
 	"@metadata": {
 		"authors": [
+			"Kly",
 			"Winston Sung"
 		]
 	},
-	"tuleap-login-error": "登入錯誤"
+	"tuleapintegration-desc": "整合 MediaWiki 到 Tuleap",
+	"tuleap-login-error": "登入錯誤",
+	"tuleap-login-error-desc": "在嘗試對 Tuleap 進行身份驗證時發生出錯。請聯繫 Tuleap 管理員。",
+	"tuleap-login-button": "使用 Tuleap 登入"
 }
