@@ -153,7 +153,9 @@ class TuleapLogin extends \SpecialPage {
 		$sessionUser->load();
 
 		// Retrieve required data and store to session
-		$this->tuleap->getIntegrationData( $this->getConfig()->get( 'TuleapProjectId' ) );
+		$this->tuleap->getIntegrationData(
+			$this->getConfig()->get( 'TuleapProjectId' ), null, null, true
+		);
 
 		return $user;
 	}

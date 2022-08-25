@@ -6,27 +6,23 @@ namespace TuleapIntegration;
 use Config;
 use Exception;
 use Html;
-use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use MediaWiki\Hook\BeforePageDisplayHook;
 use MediaWiki\Hook\OutputPageBeforeHTMLHook;
 use OutputPage;
 use Skin;
 
 class ReferenceManager implements OutputPageBeforeHTMLHook, BeforePageDisplayHook {
-	/** @var array */
-	private $referenceKeywords;
 	/** @var Config */
 	private $config;
+	/** @var TuleapConnection */
+	private $connection;
 
 	/**
 	 * @param TuleapConnection $connection
 	 * @param Config $config
-	 * @throws IdentityProviderException
 	 */
 	public function __construct( TuleapConnection $connection, Config $config ) {
-		$this->referenceKeywords = $this->getAllowedReferenceKeywords(
-			$connection->getIntegrationData( $config->get( 'TuleapProjectId' ) )
-		);
+		$this->connection = $connection;
 		$this->config = $config;
 	}
 
@@ -36,6 +32,9 @@ class ReferenceManager implements OutputPageBeforeHTMLHook, BeforePageDisplayHoo
 	 * @return bool|void
 	 */
 	public function onOutputPageBeforeHTML( $out, &$text ) {
+		if ( $out->getTitle()->isSpecialPage() ) {
+			return;
+		}
 		$text = $this->renderReferences( $text );
 	}
 
@@ -52,7 +51,9 @@ class ReferenceManager implements OutputPageBeforeHTMLHook, BeforePageDisplayHoo
 	 * @return string
 	 */
 	private function renderReferences( string $text ) {
-		$allowed = $this->referenceKeywords;
+		$allowed = $this->getAllowedReferenceKeywords(
+			$this->connection->getIntegrationData( $this->config->get( 'TuleapProjectId' ) )
+		);
 		return preg_replace_callback(
 			$this->getRegexp(),
 			function ( $match ) use ( $allowed ) {
