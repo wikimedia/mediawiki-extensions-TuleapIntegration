@@ -37,7 +37,7 @@ class SetUpOauthLogin implements BeforeInitializeHook, SpecialPage_initListHook,
 		if ( $title->isSpecial( 'TuleapLogin' ) || $title->isSpecial( 'Logout' ) ) {
 			return;
 		}
-		if ( $request->getSession()->get( 'tuleap-anon-auth-done' ) ) {
+		if ( $this->enableAnonAccess && $request->getSession()->get( 'tuleap-anon-auth-done' ) ) {
 			// Already tried to authenticate, and tuleap allowed anon access
 			return;
 		}
