@@ -48,6 +48,7 @@ class SetUpOauthLogin implements BeforeInitializeHook, SpecialPage_initListHook,
 		$spf = MediaWiki\MediaWikiServices::getInstance()->getSpecialPageFactory();
 		header( 'Location: ' . $spf->getPage( 'TuleapLogin' )->getPageTitle()
 				->getFullURL( [ 'returnto' => $returnto ] ) );
+		exit;
 	}
 
 	/**

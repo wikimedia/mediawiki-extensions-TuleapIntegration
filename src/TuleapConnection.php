@@ -130,13 +130,15 @@ class TuleapConnection {
 	 * @param int $project
 	 * @param string|null $key Specific key to retrieve
 	 * @param mixed $default Value to return in case requested key is not available
+	 * @param bool $force
+	 *
 	 * @return mixed
 	 * @throws IdentityProviderException
 	 */
-	public function getIntegrationData( $project, $key = null, $default = null ) {
-		if ( $this->integrationData === null ) {
+	public function getIntegrationData( $project, $key = null, $default = null, $force = false ) {
+		if ( $this->integrationData === null || $force ) {
 			$this->integrationData = $this->session->get( 'tuleap-integration-data' );
-			if ( $this->integrationData === null ) {
+			if ( $this->integrationData === null || $force ) {
 				$this->integrationData = [];
 				$accessToken = $this->getAccessToken();
 				$accessTokenValue = '';
@@ -154,9 +156,14 @@ class TuleapConnection {
 				);
 				$response = $this->provider->getResponse( $request );
 				if ( $response->getStatusCode() !== 200 ) {
-					throw new \Exception( $response->getReasonPhrase() );
+					$this->logger->error( 'Cannot retrieve integration data: {status} - {body}', [
+						'status' => $response->getStatusCode(),
+						'body' => $response->getBody()->getContents(),
+					] );
+					$this->integrationData = [];
+				} else {
+					$this->integrationData = json_decode( $response->getBody()->getContents(), 1 );
 				}
-				$this->integrationData = json_decode( $response->getBody()->getContents(), 1 );
 				$this->session->set( 'tuleap-integration-data', $this->integrationData );
 			}
 		}
