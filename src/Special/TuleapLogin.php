@@ -39,6 +39,8 @@ class TuleapLogin extends \SpecialPage {
 	private $userMappingProvider;
 	/** @var bool */
 	private $enableAnonAccess;
+	/** @var array */
+	private $permissionConfig = [];
 
 	/**
 	 * @param TuleapConnection $tuleap
@@ -93,8 +95,13 @@ class TuleapLogin extends \SpecialPage {
 	 */
 	public function callback() {
 		$loginRequiredAnon = $this->getRequest()->getText( 'error' ) === 'login_required';
-		// Login is required, but anons can access the wiki, so allow them
 		if ( $loginRequiredAnon && $this->enableAnonAccess ) {
+			# If anons cannot read, ask for login
+			if ( !$this->canAnonsRead() ) {
+				$this->askForLogin();
+				return true;
+			}
+			# Otherwise, let them access as anon
 			$this->getRequest()->getSession()->set( 'tuleap-anon-auth-done', true );
 			$this->redirectToMainPage();
 			return true;
@@ -167,13 +174,12 @@ class TuleapLogin extends \SpecialPage {
 	 * @throws IdentityProviderException
 	 */
 	private function setUserGroups( User $user ) {
-		$projectId = $this->getConfig()->get( 'TuleapProjectId' );
-
-		$data = $this->tuleap->getPermissionConfig( $projectId );
-		if ( !isset( $data['permissions'] ) ) {
+		// Load permissions again, as now user context is set
+		$this->loadPermissions();
+		if ( !$this->permissionConfig ) {
 			return;
 		}
-		foreach ( $data['permissions'] as $key => $value ) {
+		foreach ( $this->permissionConfig as $key => $value ) {
 			if ( !isset( $this->groupMapping[$key] ) ) {
 				continue;
 			}
@@ -187,10 +193,24 @@ class TuleapLogin extends \SpecialPage {
 	}
 
 	/**
+	 * Load permission config
+	 *
+	 * @return void
+	 * @throws IdentityProviderException
+	 */
+	private function loadPermissions() {
+		$this->permissionConfig = [];
+		$projectId = $this->getConfig()->get( 'TuleapProjectId' );
+		$data = $this->tuleap->getPermissionConfig( $projectId );
+		if ( isset( $data['permissions'] ) ) {
+			$this->permissionConfig = $data['permissions'];
+		}
+	}
+
+	/**
 	 * After login, return to whatever user wanted to see
 	 */
 	private function redirectToReturnTo() {
-		$title = null;
 		if ( $this->getRequest()->getSession()->exists( 'returnto' ) ) {
 			$title = $this->titleFactory->newFromText(
 				$this->getRequest()->getSession()->get( 'returnto' )
@@ -207,5 +227,21 @@ class TuleapLogin extends \SpecialPage {
 
 	private function redirectToMainPage() {
 		$this->getOutput()->redirect( $this->titleFactory->newMainPage()->getFullURL() );
+	}
+
+	/**
+	 * @return bool
+	 */
+	private function canAnonsRead(): bool {
+		$this->loadPermissions();
+		if ( !$this->permissionConfig ) {
+			return false;
+		}
+		return $this->permissionConfig['is_reader'];
+	}
+
+	private function askForLogin() {
+		header( 'Location:' . $this->getPageTitle()->getLocalURL( [ 'prompt' => 1 ] ) );
+		exit;
 	}
 }
