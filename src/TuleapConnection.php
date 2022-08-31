@@ -2,6 +2,7 @@
 
 namespace TuleapIntegration;
 
+use Exception;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Token\AccessTokenInterface;
@@ -106,14 +107,14 @@ class TuleapConnection {
 
 	/**
 	 * @return TuleapResourceOwner
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public function getResourceOwner(): TuleapResourceOwner {
 		if ( !$this->accessToken ) {
 			$this->logger->error(
 				"Attempted to retrieve resource owner before obtaining the access token"
 			);
-			throw new \Exception( 'Access token not yet obtained' );
+			throw new Exception( 'Access token not yet obtained' );
 		}
 
 		$ro = $this->provider->getResourceOwner( $this->accessToken );
@@ -121,7 +122,7 @@ class TuleapConnection {
 			$this->logger->error(
 				"Failed to retrieve or cast resource owner"
 			);
-			throw new \Exception( 'Could not retrieve resource owner' );
+			throw new Exception( 'Could not retrieve resource owner' );
 		}
 		return $ro;
 	}
@@ -154,16 +155,23 @@ class TuleapConnection {
 					),
 					$accessTokenValue
 				);
-				$response = $this->provider->getResponse( $request );
-				if ( $response->getStatusCode() !== 200 ) {
-					$this->logger->error( 'Cannot retrieve integration data: {status} - {body}', [
-						'status' => $response->getStatusCode(),
-						'body' => $response->getBody()->getContents(),
+				try {
+					$response = $this->provider->getResponse( $request );
+					if ( $response->getStatusCode() !== 200 ) {
+						$this->logger->error( 'Cannot retrieve integration data: {status} - {body}', [
+							'status' => $response->getStatusCode(),
+							'body' => $response->getBody()->getContents(),
+						] );
+					} else {
+						$this->integrationData = json_decode( $response->getBody()->getContents(), 1 );
+					}
+				} catch ( Exception $ex ) {
+					$this->logger->error( 'Cannot retrieve integration data: {error}', [
+						'error' => $ex->getMessage(),
 					] );
 					$this->integrationData = [];
-				} else {
-					$this->integrationData = json_decode( $response->getBody()->getContents(), 1 );
 				}
+
 				$this->session->set( 'tuleap-integration-data', $this->integrationData );
 			}
 		}
@@ -182,21 +190,19 @@ class TuleapConnection {
 	 */
 	public function getPermissionConfig( $project ) {
 		$accessToken = $this->getAccessToken();
-		if ( !$accessToken ) {
-			$this->logger->warning(
-				"Attempted to retrieve resource owner before obtaining the access token"
-			);
-			return [];
+		$accessTokenValue = '';
+		if ( $accessToken instanceof AccessTokenInterface ) {
+			$accessTokenValue = $accessToken->getToken();
 		}
 
 		$request = $this->provider->getAuthenticatedRequest(
 			'GET',
 			$this->provider->compileUrl( "/api/projects/$project/mediawiki_standalone_permissions" ),
-			$accessToken->getToken()
+			$accessTokenValue
 		);
 		$response = $this->provider->getResponse( $request );
 		if ( $response->getStatusCode() !== 200 ) {
-			throw new \Exception( $response->getReasonPhrase() );
+			throw new Exception( $response->getReasonPhrase() );
 		}
 		return json_decode( $response->getBody()->getContents(), 1 );
 	}
