@@ -19,7 +19,6 @@ class TuleapLogin extends \SpecialPage {
 	 * @var string[]
 	 */
 	private $groupMapping = [
-		'is_reader' => 'reader',
 		'is_writer' => 'editor',
 		'is_admin' => 'sysop',
 		'is_bot' => 'bot'
@@ -37,8 +36,6 @@ class TuleapLogin extends \SpecialPage {
 	private $groupManager;
 	/** @var UserMappingProvider */
 	private $userMappingProvider;
-	/** @var bool */
-	private $enableAnonAccess;
 	/** @var array */
 	private $permissionConfig = [];
 
@@ -62,7 +59,6 @@ class TuleapLogin extends \SpecialPage {
 		$this->userOptionsManager = $userOptionsManager;
 		$this->groupManager = $groupManager;
 		$this->userMappingProvider = $userMappingProvider;
-		$this->enableAnonAccess = $this->getConfig()->get( 'TuleapAccessPreset' ) === 'anonymous';
 	}
 
 	/**
@@ -80,7 +76,7 @@ class TuleapLogin extends \SpecialPage {
 		}
 		$url = $this->tuleap->getAuthorizationUrl(
 			$this->getRequest()->getVal( 'returnto' ),
-			!$this->enableAnonAccess || $this->getRequest()->getBool( 'prompt' )
+			$this->getRequest()->getBool( 'prompt' )
 		);
 		$this->getOutput()->redirect( $url );
 
@@ -94,18 +90,17 @@ class TuleapLogin extends \SpecialPage {
 	 * @throws \MWException
 	 */
 	public function callback() {
-		$loginRequiredAnon = $this->getRequest()->getText( 'error' ) === 'login_required';
-		if ( $loginRequiredAnon && $this->enableAnonAccess ) {
-			# If anons cannot read, ask for login
-			if ( !$this->canAnonsRead() ) {
-				$this->askForLogin();
-				return true;
-			}
-			# Otherwise, let them access as anon
+		if ( $this->canAnonsRead() ) {
+			// If anons can read, allow them
 			$this->getRequest()->getSession()->set( 'tuleap-anon-auth-done', true );
 			$this->redirectToMainPage();
 			return true;
+		} elseif ( !$this->askedForLogin() ) {
+			// Otherwise, if not already, ask user to login
+			$this->askForLogin();
+			return true;
 		}
+		// User logged, in set the user
 		try {
 			$this->tuleap->obtainAccessToken( $this->getRequest() );
 			$resourceOwner = $this->tuleap->getResourceOwner();
@@ -205,6 +200,9 @@ class TuleapLogin extends \SpecialPage {
 		if ( isset( $data['permissions'] ) ) {
 			$this->permissionConfig = $data['permissions'];
 		}
+		$this->getRequest()->getSession()->set(
+			'tuleap-permissions', $this->permissionConfig
+		);
 	}
 
 	/**
@@ -241,7 +239,16 @@ class TuleapLogin extends \SpecialPage {
 	}
 
 	private function askForLogin() {
+		$this->getRequest()->getSession()->set( 'tuleap-ask-for-login', true );
 		header( 'Location:' . $this->getPageTitle()->getLocalURL( [ 'prompt' => 1 ] ) );
 		exit;
+	}
+
+	/**
+	 * Check if we already asked for login
+	 * @return bool
+	 */
+	private function askedForLogin(): bool {
+		return (bool)$this->getRequest()->getSession()->get( 'tuleap-ask-for-login' );
 	}
 }
