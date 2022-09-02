@@ -39,9 +39,6 @@
 		"TuleapEnableLocalLogin": {
 			"value": true,
 			"description": "If true, no Oauth auto-login will be executed"
-		},
-		"TuleapAccessPreset": {
-			"value": "anonymous"
 		}
 	},
 	"Hooks": {
@@ -50,7 +47,9 @@
 		"HtmlPageLinkRendererEnd": "replaceUserLinks",
 		"SpecialPage_initList": "setUpOauthLogin",
 		"OutputPageBeforeHTML": "replaceLinks",
-		"BeforePageDisplay": "replaceLinks"
+		"BeforePageDisplay": "replaceLinks",
+		"getUserPermissionsErrors":  "setUpOauthLogin",
+		"userCan": "setUpOauthLogin"
 	},
 	"HookHandlers": {
 		"setUpOauthLogin": {

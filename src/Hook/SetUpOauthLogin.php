@@ -6,22 +6,29 @@ use Config;
 use MediaWiki;
 use MediaWiki\Hook\BeforeInitializeHook;
 use MediaWiki\Hook\PersonalUrlsHook;
+use MediaWiki\Permissions\Hook\GetUserPermissionsErrorsHook;
+use MediaWiki\Permissions\Hook\UserCanHook;
 use MediaWiki\SpecialPage\Hook\SpecialPage_initListHook;
+use Message;
 use SkinTemplate;
 use Title;
+use User;
 
-class SetUpOauthLogin implements BeforeInitializeHook, SpecialPage_initListHook, PersonalUrlsHook {
+class SetUpOauthLogin implements
+	BeforeInitializeHook,
+	SpecialPage_initListHook,
+	PersonalUrlsHook,
+	GetUserPermissionsErrorsHook,
+	UserCanHook
+{
 	/** @var bool */
 	private $enableLocalLogin;
-	/** @var bool */
-	private $enableAnonAccess;
 
 	/**
 	 * @param Config $config
 	 */
 	public function __construct( Config $config ) {
 		$this->enableLocalLogin = (bool)$config->get( 'TuleapEnableLocalLogin' );
-		$this->enableAnonAccess = $config->get( 'TuleapAccessPreset' ) === 'anonymous';
 	}
 
 	/**
@@ -37,7 +44,7 @@ class SetUpOauthLogin implements BeforeInitializeHook, SpecialPage_initListHook,
 		if ( $title->isSpecial( 'TuleapLogin' ) || $title->isSpecial( 'Logout' ) ) {
 			return;
 		}
-		if ( $this->enableAnonAccess && $request->getSession()->get( 'tuleap-anon-auth-done' ) ) {
+		if ( $request->getSession()->get( 'tuleap-anon-auth-done' ) ) {
 			// Already tried to authenticate, and tuleap allowed anon access
 			return;
 		}
@@ -80,14 +87,69 @@ class SetUpOauthLogin implements BeforeInitializeHook, SpecialPage_initListHook,
 		if ( !isset( $personal_urls['login'] ) ) {
 			return;
 		}
-		if ( $this->enableAnonAccess ) {
-			$personal_urls['login']['text'] = \Message::newFromKey( 'tuleap-login-button' )->text();
+		$personal_urls['login']['text'] = Message::newFromKey( 'tuleap-login-button' )->text();
 
-			$spf = MediaWiki\MediaWikiServices::getInstance()->getSpecialPageFactory();
-			$loginPage = $spf->getPage( 'TuleapLogin' )->getPageTitle();
-			$personal_urls['login']['href'] = $loginPage->getLocalURL( [ 'prompt' => 1 ] );
-		} else {
-			unset( $personal_urls['login'] );
+		$spf = MediaWiki\MediaWikiServices::getInstance()->getSpecialPageFactory();
+		$loginPage = $spf->getPage( 'TuleapLogin' )->getPageTitle();
+		$personal_urls['login']['href'] = $loginPage->getLocalURL( [ 'prompt' => 1 ] );
+	}
+
+	/**
+	 * @param Title $title
+	 * @param User $user
+	 * @param string $action
+	 * @param array &$result
+	 *
+	 * @return bool
+	 */
+	public function onGetUserPermissionsErrors( $title, $user, $action, &$result ) {
+		if ( $action !== 'read' ) {
+			return true;
 		}
+		if ( !$this->canCurrentUserRead( $title ) ) {
+			$result[] = [ 'tuleap-no-access' ];
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * @param Title $title
+	 * @param User $user
+	 * @param string $action
+	 * @param bool &$result
+	 *
+	 * @return bool
+	 */
+	public function onUserCan( $title, $user, $action, &$result ) {
+		if ( $action !== 'read' ) {
+			return true;
+		}
+		if ( $this->canCurrentUserRead( $title ) ) {
+			$result = true;
+			return false;
+		}
+		$result = false;
+		return false;
+	}
+
+	/**
+	 * @param Title $title
+	 *
+	 * @return bool
+	 */
+	private function canCurrentUserRead( $title ): bool {
+		if ( $title->isSpecial( 'TuleapLogin' ) ) {
+			return true;
+		}
+		$session = \RequestContext::getMain()->getRequest()->getSession();
+		$permissions = $session->get( 'tuleap-permissions' );
+		if ( !$permissions ) {
+			return false;
+		}
+		if ( !isset( $permissions['is_reader'] ) || $permissions['is_reader'] === false ) {
+			return false;
+		}
+		return true;
 	}
 }
