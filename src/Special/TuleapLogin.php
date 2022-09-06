@@ -90,16 +90,20 @@ class TuleapLogin extends \SpecialPage {
 	 * @throws \MWException
 	 */
 	public function callback() {
-		if ( $this->canAnonsRead() ) {
-			// If anons can read, allow them
-			$this->getRequest()->getSession()->set( 'tuleap-anon-auth-done', true );
-			$this->redirectToMainPage();
-			return true;
-		} elseif ( !$this->askedForLogin() ) {
-			// Otherwise, if not already, ask user to login
-			$this->askForLogin();
-			return true;
+		$loginRequired = $this->getRequest()->getText( 'error' ) === 'login_required';
+		if ( $loginRequired ) {
+			if ( $this->canAnonsRead() ) {
+				// If anons can read, allow them
+				$this->getRequest()->getSession()->set( 'tuleap-anon-auth-done', true );
+				$this->redirectToMainPage();
+				return true;
+			} elseif ( !$this->askedForLogin() ) {
+				// Otherwise, if not already, ask user to login
+				$this->askForLogin();
+				return true;
+			}
 		}
+
 		// User logged, in set the user
 		try {
 			$this->tuleap->obtainAccessToken( $this->getRequest() );
