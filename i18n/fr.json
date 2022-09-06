@@ -9,5 +9,6 @@
 	"tuleapintegration-desc": "Intègre MediaWiki dans Tuleap",
 	"tuleap-login-error": "Erreur de connexion",
 	"tuleap-login-error-desc": "Une erreur s’est produite en essayant de s’authentifier avec Tuleap. Veuillez contacter l’administrateur de Tuleap.",
-	"tuleap-login-button": "Connectez-vous avec Tuleap"
+	"tuleap-login-button": "Connectez-vous avec Tuleap",
+	"tuleap-no-access": "Accès refusé"
 }
