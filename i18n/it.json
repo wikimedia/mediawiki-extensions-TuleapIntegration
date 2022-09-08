@@ -4,5 +4,6 @@
 			"Beta16"
 		]
 	},
-	"tuleap-login-error": "Errore durante l'accesso"
+	"tuleap-login-error": "Errore durante l'accesso",
+	"tuleap-no-access": "Accesso negato"
 }
