@@ -6,5 +6,6 @@
 	},
 	"tuleapintegration-desc": "Integréiert MediaWiki an Tuleap",
 	"tuleap-login-error": "Feeler beim Aloggen",
-	"tuleap-login-error-desc": "Beim Versuch sech op Tuleap z'authentifizéieren ass e Feeler geschitt. Kontaktéiert wgl. en Tuleap-Administrateur"
+	"tuleap-login-error-desc": "Beim Versuch sech op Tuleap z'authentifizéieren ass e Feeler geschitt. Kontaktéiert wgl. en Tuleap-Administrateur",
+	"tuleap-no-access": "Zougang refuséiert"
 }
