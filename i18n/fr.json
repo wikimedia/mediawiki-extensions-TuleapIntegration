@@ -1,9 +1,9 @@
 {
 	"@metadata": {
 		"authors": [
+			"Cigaryno",
 			"Gomoko",
-			"Verdy p",
-			"Cigaryno"
+			"Verdy p"
 		]
 	},
 	"tuleapintegration-desc": "Intègre MediaWiki dans Tuleap",

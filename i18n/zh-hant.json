@@ -1,8 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Winston Sung",
-			"Kly"
+			"Kly",
+			"Winston Sung"
 		]
 	},
 	"tuleapintegration-desc": "整合 MediaWiki 到 Tuleap",

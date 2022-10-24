@@ -6,5 +6,7 @@
 	},
 	"tuleap-login-error": "Гришка при приявйованю",
 	"tuleap-login-button": "Приявце ше хаснуюци Tuleap",
-	"tuleap-no-access": "Приступ забранєни"
+	"tuleap-no-access": "Приступ забранєни",
+	"tuleapintegration-desc": "Интеґрує MediaWiki у Tuleap",
+	"tuleap-login-error-desc": "Пришло до гришки при потвердзеню идентитета прейґ Tuleap-а. Контактуйце администратора Tuleap-а."
 }
