@@ -4,6 +4,7 @@
 			"Vlad5250"
 		]
 	},
+	"tuleapintegration-desc": "Uklapa MediaWiki u Tuleap",
 	"tuleap-login-error": "Greška pri prijavljivanju",
 	"tuleap-login-error-desc": "Došlo je do greške prilikom pokušaja autentifikacije u Tuleapu. Molimo kontaktirajte Tuleap administratora",
 	"tuleap-login-button": "Prijavite se koristeći Tuleap",
