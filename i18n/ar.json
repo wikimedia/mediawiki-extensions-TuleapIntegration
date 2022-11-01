@@ -1,8 +1,13 @@
 {
 	"@metadata": {
 		"authors": [
+			"Meno25",
 			"محمد أحمد عبد الفتاح"
 		]
 	},
-	"tuleap-login-error": "خطأ بالولوج"
+	"tuleapintegration-desc": "يدمج ميدياويكي في توليب",
+	"tuleap-login-error": "خطأ بالولوج",
+	"tuleap-login-error-desc": "حدث خطأ أثناء محاولة المصادقة على Tuleap. يرجى الاتصال بمسؤول توليب.",
+	"tuleap-login-button": "تسجيل الدخول باستخدام توليب",
+	"tuleap-no-access": "تم الرفض"
 }
