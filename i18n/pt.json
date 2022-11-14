@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Hamilton Abreu"
+		]
+	},
+	"tuleapintegration-desc": "Integra o MediaWiki no Tuleap",
+	"tuleap-login-error": "Erro ao iniciar sessão",
+	"tuleap-login-error-desc": "Ocorreu um erro ao tentar fazer a autenticação no Tuleap. Contacte um administrador do Tuleap, por favor.",
+	"tuleap-login-button": "Iniciar sessão usando o Tuleap",
+	"tuleap-no-access": "Acesso negado"
+}
