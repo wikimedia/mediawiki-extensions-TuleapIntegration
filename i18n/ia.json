@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"McDutchie"
+		]
+	},
+	"tuleapintegration-desc": "Integra MediaWiki in Tuleap",
+	"tuleap-login-error": "Error in le apertura del session",
+	"tuleap-login-error-desc": "Un error ha occurrite durante le tentativa de authenticar te con Tuleap. Per favor contacta un administrator de Tuleap.",
+	"tuleap-login-button": "Aperir session con Tuleap",
+	"tuleap-no-access": "Accesso refusate"
+}
