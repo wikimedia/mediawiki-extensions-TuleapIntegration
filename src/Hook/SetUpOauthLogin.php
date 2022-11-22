@@ -106,6 +106,9 @@ class SetUpOauthLogin implements
 		if ( $action !== 'read' ) {
 			return true;
 		}
+		if ( $this->enableLocalLogin ) {
+			return true;
+		}
 		if ( !$this->canCurrentUserRead( $title ) ) {
 			$result[] = [ 'tuleap-no-access' ];
 			return false;
@@ -123,6 +126,9 @@ class SetUpOauthLogin implements
 	 */
 	public function onUserCan( $title, $user, $action, &$result ) {
 		if ( $action !== 'read' ) {
+			return true;
+		}
+		if ( $this->enableLocalLogin ) {
 			return true;
 		}
 		if ( $this->canCurrentUserRead( $title ) ) {
