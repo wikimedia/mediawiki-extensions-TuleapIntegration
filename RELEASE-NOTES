@@ -4,6 +4,7 @@ This is a security and maintenance release of the TuleapIntegration 1.0 branch.
 
 === Changes since TuleapIntegration 1.0.0 ===
 * Localisation updates.
+* (Tuleap#29624) Fix read permission checks with "local login" configuration
 
 = TuleapIntegration 1.0.0 =
 
