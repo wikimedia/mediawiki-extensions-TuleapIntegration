@@ -3,9 +3,9 @@
 	"version": "2.0.0-alpha",
 	"license-name": "GPL-3.0-only",
 	"author": [
-		"[http://www.hallowelt.com Hallo Welt! GmbH]"
+		"[https://www.hallowelt.com Hallo Welt! GmbH]"
 	],
-	"url": "http://www.hallowelt.com",
+	"url": "https://www.hallowelt.com",
 	"descriptionmsg": "tuleapintegration-desc",
 	"requires": {
 		"MediaWiki": ">= 1.35.0"
