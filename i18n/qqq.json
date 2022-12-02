@@ -1,8 +1,10 @@
 {
 	"@metadata": {
-		"authors": []
+		"authors": [
+			"Umherirrender"
+		]
 	},
-	"tuleapintegration-desc": "Description of TuleapIntegration for [[Special:Version]]",
+	"tuleapintegration-desc": "{{desc|name=TuleapIntegration}}",
 	"tuleap-login-error": "Page name when authentication with Tuleap fails",
 	"tuleap-login-error-desc": "Generic error message when authentication with Tuleap fails",
 	"tuleap-login-button": "Label for the login button when Tuleap OAuth is enabled",
