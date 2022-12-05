@@ -110,7 +110,7 @@ class SetUpOauthLogin implements
 			return true;
 		}
 		if ( !$this->canCurrentUserRead( $title ) ) {
-			$result[] = [ 'tuleap-no-access' ];
+			$result = [ 'tuleap-no-access' ];
 			return false;
 		}
 		return true;
