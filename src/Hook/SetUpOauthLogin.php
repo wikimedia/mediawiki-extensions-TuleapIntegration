@@ -5,21 +5,18 @@ namespace TuleapIntegration\Hook;
 use Config;
 use MediaWiki;
 use MediaWiki\Hook\BeforeInitializeHook;
-use MediaWiki\Hook\PersonalUrlsHook;
+use MediaWiki\Hook\SkinTemplateNavigation__UniversalHook;
 use MediaWiki\Permissions\Hook\GetUserPermissionsErrorsHook;
-use MediaWiki\Permissions\Hook\UserCanHook;
 use MediaWiki\SpecialPage\Hook\SpecialPage_initListHook;
 use Message;
-use SkinTemplate;
 use Title;
 use User;
 
 class SetUpOauthLogin implements
 	BeforeInitializeHook,
 	SpecialPage_initListHook,
-	PersonalUrlsHook,
-	GetUserPermissionsErrorsHook,
-	UserCanHook
+	SkinTemplateNavigation__UniversalHook,
+	GetUserPermissionsErrorsHook
 {
 	/** @var bool */
 	private $enableLocalLogin;
@@ -73,25 +70,23 @@ class SetUpOauthLogin implements
 	}
 
 	/**
-	 * @param array &$personal_urls
-	 * @param Title &$title
-	 * @param SkinTemplate $skin
+	 * @inheritDoc
 	 */
-	public function onPersonalUrls( &$personal_urls, &$title, $skin ): void {
+	public function onSkinTemplateNavigation__Universal( $sktemplate, &$links ): void {
 		if ( $this->enableLocalLogin ) {
 			return;
 		}
-		if ( isset( $personal_urls['logout'] ) ) {
-			unset( $personal_urls['logout'] );
+		if ( isset( $links['user-menu']['logout'] ) ) {
+			unset( $links['user-menu']['logout'] );
 		}
-		if ( !isset( $personal_urls['login'] ) ) {
+		if ( !isset( $links['user-menu']['login'] ) ) {
 			return;
 		}
-		$personal_urls['login']['text'] = Message::newFromKey( 'tuleap-login-button' )->text();
+		$links['user-menu']['login']['text'] = Message::newFromKey( 'tuleap-login-button' )->text();
 
 		$spf = MediaWiki\MediaWikiServices::getInstance()->getSpecialPageFactory();
 		$loginPage = $spf->getPage( 'TuleapLogin' )->getPageTitle();
-		$personal_urls['login']['href'] = $loginPage->getLocalURL( [ 'prompt' => 1 ] );
+		$links['user-menu']['login']['href'] = $loginPage->getLocalURL( [ 'prompt' => 1 ] );
 	}
 
 	/**
@@ -114,29 +109,6 @@ class SetUpOauthLogin implements
 			return false;
 		}
 		return true;
-	}
-
-	/**
-	 * @param Title $title
-	 * @param User $user
-	 * @param string $action
-	 * @param bool &$result
-	 *
-	 * @return bool
-	 */
-	public function onUserCan( $title, $user, $action, &$result ) {
-		if ( $action !== 'read' ) {
-			return true;
-		}
-		if ( $this->enableLocalLogin ) {
-			return true;
-		}
-		if ( $this->canCurrentUserRead( $title ) ) {
-			$result = true;
-			return false;
-		}
-		$result = false;
-		return false;
 	}
 
 	/**
