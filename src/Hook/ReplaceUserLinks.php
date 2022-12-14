@@ -2,11 +2,12 @@
 
 namespace TuleapIntegration\Hook;
 
-use MediaWiki\Hook\PersonalUrlsHook;
+use MediaWiki\Hook\SkinTemplateNavigation__UniversalHook;
 use MediaWiki\Linker\Hook\HtmlPageLinkRendererEndHook;
 use MediaWiki\User\UserFactory;
+use User;
 
-class ReplaceUserLinks implements HtmlPageLinkRendererEndHook, PersonalUrlsHook {
+class ReplaceUserLinks implements HtmlPageLinkRendererEndHook, SkinTemplateNavigation__UniversalHook {
 	/** @var UserFactory */
 	private $userFactory;
 
@@ -30,7 +31,7 @@ class ReplaceUserLinks implements HtmlPageLinkRendererEndHook, PersonalUrlsHook 
 			return true;
 		}
 		$user = $this->userFactory->newFromName( $target->getDBkey() );
-		if ( !( $user instanceof $user ) || !$user->isRegistered() ) {
+		if ( !( $user instanceof User ) || !$user->isRegistered() ) {
 			return true;
 		}
 		$text = $user->getRealName();
@@ -40,14 +41,14 @@ class ReplaceUserLinks implements HtmlPageLinkRendererEndHook, PersonalUrlsHook 
 	/**
 	 * @inheritDoc
 	 */
-	public function onPersonalUrls( &$personal_urls, &$title, $skin ): void {
-		if ( !isset( $personal_urls['userpage'] ) ) {
+	public function onSkinTemplateNavigation__Universal( $sktemplate, &$links ): void {
+		if ( !isset( $links['user-menu']['userpage'] ) ) {
 			return;
 		}
-		$user = $this->userFactory->newFromName( $personal_urls['userpage']['text'] );
-		if ( !( $user instanceof $user ) || !$user->isRegistered() ) {
+		$user = $this->userFactory->newFromName( $links['user-menu']['userpage']['text'] );
+		if ( !( $user instanceof User ) || !$user->isRegistered() ) {
 			return;
 		}
-		$personal_urls['userpage']['text'] = $user->getRealName();
+		$links['user-menu']['userpage']['text'] = $user->getRealName();
 	}
 }

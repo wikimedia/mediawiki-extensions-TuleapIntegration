@@ -43,13 +43,12 @@
 	},
 	"Hooks": {
 		"BeforeInitialize": "setUpOauthLogin",
-		"PersonalUrls": [ "setUpOauthLogin", "replaceUserLinks" ],
+		"SkinTemplateNavigation::Universal": [ "setUpOauthLogin", "replaceUserLinks" ],
 		"HtmlPageLinkRendererEnd": "replaceUserLinks",
 		"SpecialPage_initList": "setUpOauthLogin",
 		"OutputPageBeforeHTML": "replaceLinks",
 		"BeforePageDisplay": "replaceLinks",
-		"getUserPermissionsErrors":  "setUpOauthLogin",
-		"userCan": "setUpOauthLogin"
+		"getUserPermissionsErrors":  "setUpOauthLogin"
 	},
 	"HookHandlers": {
 		"setUpOauthLogin": {
