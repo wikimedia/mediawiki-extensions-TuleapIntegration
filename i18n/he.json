@@ -1,8 +1,13 @@
 {
 	"@metadata": {
 		"authors": [
-			"מקף"
+			"מקף",
+			"Amire80"
 		]
 	},
+	"tuleapintegration-desc": "שילוב מדיה־ויקי לתוך Tuleap",
+	"tuleap-login-error": "שגיאה בכניסה לחשבון",
+	"tuleap-login-error-desc": "אירעה שגיאה בעת הניסיון לבצע אימות מול Tuleap. נא ליצור קשר עם מנהל מערכת של Tuleap.",
+	"tuleap-login-button": "כניסה לחשבון באמצעות Tuleap",
 	"tuleap-no-access": "הגישה נדחתה"
 }
