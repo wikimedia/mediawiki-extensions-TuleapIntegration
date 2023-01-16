@@ -4,5 +4,9 @@
 			"Eleassar"
 		]
 	},
+	"tuleapintegration-desc": "Integrira MediaWiki v Tuleap",
+	"tuleap-login-error": "Napaka pri prijavi",
+	"tuleap-login-error-desc": "Pri poskusu avtentikacije v Tuleapu je prišlo do napake. Obrnite se na administratorja Tuleapa.",
+	"tuleap-login-button": "Prijava s Tuleapom",
 	"tuleap-no-access": "Dostop zavrnjen"
 }
