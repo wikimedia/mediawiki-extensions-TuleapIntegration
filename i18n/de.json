@@ -7,5 +7,6 @@
 	"tuleapintegration-desc": "Integriert MediaWiki in Tuleap",
 	"tuleap-login-error": "Fehler bei der Anmeldung",
 	"tuleap-login-error-desc": "Beim Versuch, sich bei Tuleap zu authentifizieren, ist ein Fehler aufgetreten. Bitte kontaktiere den Tuleap-Administrator",
+	"tuleap-login-button": "Mit Tuleap anmelden",
 	"tuleap-no-access": "Zugriff verweigert"
 }
