@@ -4,6 +4,7 @@ This is a security and maintenance release of the TuleapIntegration 1.0 branch.
 
 === Changes since TuleapIntegration 1.0.2 ===
 * Localisation updates.
+* Replace deprecated hooks "PersonalUrlsHook" and "UserCanHook"
 
 = TuleapIntegration 1.0.2 =
 
