@@ -84,7 +84,11 @@ class TuleapConnection {
 		$storedState = $this->session->get( 'tuleapOauth2state' );
 		$providedState = $request->getVal( 'state' );
 
-		if ( !hash_equals( $storedState, $providedState ) ) {
+		if (
+			!is_string( $storedState ) ||
+			!is_string( $providedState ) ||
+			!hash_equals( $storedState, $providedState )
+		) {
 			$this->logger->error( "State mismatch: provided={provided} expected={exp}", [
 				'provided' => $providedState,
 				'exp' => $storedState,
