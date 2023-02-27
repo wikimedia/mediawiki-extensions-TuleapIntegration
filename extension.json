@@ -8,7 +8,7 @@
 	"url": "https://www.hallowelt.com",
 	"descriptionmsg": "tuleapintegration-desc",
 	"requires": {
-		"MediaWiki": ">= 1.35.0"
+		"MediaWiki": ">= 1.39.0"
 	},
 	"MessagesDirs": {
 		"TuleapIntegration": "i18n"
