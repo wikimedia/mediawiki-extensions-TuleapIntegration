@@ -4,6 +4,7 @@ This is a security and maintenance release of the TuleapIntegration 1.0 branch.
 
 === Changes since TuleapIntegration 1.0.3 ===
 * Localisation updates.
+* (Tuleap#30731)  Prevent PHP warning on failed OAuth2 flow
 
 = TuleapIntegration 1.0.3 =
 
