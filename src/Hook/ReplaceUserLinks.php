@@ -34,7 +34,10 @@ class ReplaceUserLinks implements HtmlPageLinkRendererEndHook, SkinTemplateNavig
 		if ( !( $user instanceof User ) || !$user->isRegistered() ) {
 			return true;
 		}
-		$text = $user->getRealName();
+		$realName = $user->getRealName();
+		if ( !empty( $realName ) ) {
+			$text = $realName;
+		}
 		return true;
 	}
 
@@ -49,6 +52,9 @@ class ReplaceUserLinks implements HtmlPageLinkRendererEndHook, SkinTemplateNavig
 		if ( !( $user instanceof User ) || !$user->isRegistered() ) {
 			return;
 		}
-		$links['user-menu']['userpage']['text'] = $user->getRealName();
+		$realName = $user->getRealName();
+		if ( !empty( $realName ) ) {
+			$links['user-menu']['userpage']['text'] = $realName;
+		}
 	}
 }
