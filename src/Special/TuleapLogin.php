@@ -128,8 +128,8 @@ class TuleapLogin extends \SpecialPage {
 	 * @throws \MWException
 	 */
 	private function setUser( TuleapResourceOwner $owner ) {
-		$legacyUser = $this->userMappingProvider->provideUserForId( $owner->getId() );
-		if ( !( $legacyUser instanceof User ) ) {
+		$user = $this->userMappingProvider->provideUserForId( $owner->getId() );
+		if ( $user === null ) {
 			$user = $this->userFactory->newFromName( $owner->getId() );
 		}
 
