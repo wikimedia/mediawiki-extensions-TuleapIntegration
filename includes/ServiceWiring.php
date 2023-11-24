@@ -18,9 +18,11 @@ return [
 		);
 	},
 	'TuleapUserMappingProvider' => static function ( MediaWikiServices $services ) {
+		$logger = LoggerFactory::getInstance( 'tuleap-connection' );
 		return new UserMappingProvider(
 			$services->getDBLoadBalancer(),
-			$services->getUserFactory()
+			$services->getUserFactory(),
+			$logger
 		);
 	},
 ];
