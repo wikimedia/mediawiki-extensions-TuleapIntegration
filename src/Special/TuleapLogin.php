@@ -141,6 +141,10 @@ class TuleapLogin extends \SpecialPage {
 			$this->logger->info( "User not in legacy mapping table" );
 			$user = $this->userFactory->newFromName( $owner->getId() );
 		}
+		// Neither `tuleap_user_mapping` nor `TuleapResourceOwner::getId` provided usable values
+		if ( $user === null ) {
+			throw new \MWException( 'Could not create user' );
+		}
 
 		$user->setRealName( $owner->getRealName() );
 		$user->setEmail( $owner->getEmail() );
