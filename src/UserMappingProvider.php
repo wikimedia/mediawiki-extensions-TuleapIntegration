@@ -31,7 +31,7 @@ class UserMappingProvider {
 		if ( !$db->tableExists( 'tuleap_user_mapping' ) ) {
 			return null;
 		}
-		$row = $this->lb->getConnection( DB_REPLICA )->selectRow(
+		$row = $db->selectRow(
 			'tuleap_user_mapping',
 			[
 				'tum_user_name'
