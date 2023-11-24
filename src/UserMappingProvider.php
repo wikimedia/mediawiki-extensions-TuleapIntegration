@@ -28,9 +28,9 @@ class UserMappingProvider {
 	/**
 	 * @param int $id Tuleap user ID
 	 *
-	 * @return string|null
+	 * @return User|null
 	 */
-	public function provideUserForId( int $id ): ?string {
+	public function provideUserForId( int $id ): ?User {
 		$db = $this->lb->getConnection( DB_REPLICA );
 		if ( !$db->tableExists( 'tuleap_user_mapping' ) ) {
 			$this->logger->info( 'Table `tuleap_user_mapping` does not exist' );
