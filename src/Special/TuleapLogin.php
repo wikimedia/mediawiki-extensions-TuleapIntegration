@@ -3,9 +3,11 @@
 namespace TuleapIntegration\Special;
 
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
+use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\User\UserFactory;
 use MediaWiki\User\UserGroupManager;
 use MediaWiki\User\UserOptionsManager;
+use Psr\Log\LoggerInterface;
 use Title;
 use TitleFactory as TitleFactory;
 use TuleapIntegration\TuleapConnection;
@@ -38,6 +40,8 @@ class TuleapLogin extends \SpecialPage {
 	private $userMappingProvider;
 	/** @var array */
 	private $permissionConfig = [];
+	/** @var LoggerInterface */
+	private $logger;
 
 	/**
 	 * @param TuleapConnection $tuleap
@@ -59,6 +63,7 @@ class TuleapLogin extends \SpecialPage {
 		$this->userOptionsManager = $userOptionsManager;
 		$this->groupManager = $groupManager;
 		$this->userMappingProvider = $userMappingProvider;
+		$this->logger = LoggerFactory::getInstance( 'tuleap-connection' );
 	}
 
 	/**
@@ -68,10 +73,12 @@ class TuleapLogin extends \SpecialPage {
 		$this->setHeaders();
 		if ( $this->getUser()->isRegistered() ) {
 			$this->redirectToReturnTo();
+			$this->logger->debug( 'User already logged in' );
 			return true;
 		}
 
 		if ( $subPage === 'callback' ) {
+			$this->logger->debug( 'Run callback' );
 			return $this->callback();
 		}
 		$url = $this->tuleap->getAuthorizationUrl(
@@ -79,6 +86,7 @@ class TuleapLogin extends \SpecialPage {
 			$this->getRequest()->getBool( 'prompt' )
 		);
 		$this->getOutput()->redirect( $url );
+		$this->logger->debug( 'Redirect to Tuleap' );
 
 		return true;
 	}
@@ -130,12 +138,14 @@ class TuleapLogin extends \SpecialPage {
 	private function setUser( TuleapResourceOwner $owner ) {
 		$user = $this->userMappingProvider->provideUserForId( $owner->getId() );
 		if ( $user === null ) {
+			$this->logger->info( "User not in legacy mapping table" );
 			$user = $this->userFactory->newFromName( $owner->getId() );
 		}
 
 		$user->setRealName( $owner->getRealName() );
 		$user->setEmail( $owner->getEmail() );
 		$user->load();
+		$this->logger->info( "Setting user: " . $user->getName() );
 		if ( !$user->isRegistered() ) {
 			$user->addToDatabase();
 		}
@@ -184,8 +194,10 @@ class TuleapLogin extends \SpecialPage {
 			}
 			$group = $this->groupMapping[$key];
 			if ( $value ) {
+				$this->logger->debug( "Add user to group $group" );
 				$this->groupManager->addUserToGroup( $user, $group );
 			} else {
+				$this->logger->debug( "Remove user from group $group" );
 				$this->groupManager->removeUserFromGroup( $user, $group );
 			}
 		}
