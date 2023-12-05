@@ -1,8 +1,13 @@
 {
 	"@metadata": {
 		"authors": [
-			"Mainframe98"
+			"Mainframe98",
+			"McDutchie"
 		]
 	},
-	"tuleap-login-error": "Aanmeldfout"
+	"tuleapintegration-desc": "Integreert MediaWiki in Tuleap",
+	"tuleap-login-error": "Aanmeldfout",
+	"tuleap-login-error-desc": "Er is een fout opgetreden bij het authenticeren bij Tuleap. Neem contact op met een Tuleap-beheerder.",
+	"tuleap-login-button": "Aanmelden met Tuleap",
+	"tuleap-no-access": "Toegang geweigerd"
 }
