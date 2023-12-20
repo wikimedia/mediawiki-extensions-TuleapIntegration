@@ -168,7 +168,6 @@ class TuleapLogin extends \SpecialPage {
 		$this->getContext()->setUser( $user );
 		$user->saveSettings();
 
-		$GLOBALS['wgUser'] = $user;
 		$sessionUser = User::newFromSession( $this->getRequest() );
 		$sessionUser->load();
 
