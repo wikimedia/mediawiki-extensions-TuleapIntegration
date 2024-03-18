@@ -9,7 +9,7 @@ use MediaWiki\User\UserGroupManager;
 use MediaWiki\User\UserOptionsManager;
 use Psr\Log\LoggerInterface;
 use Title;
-use TitleFactory as TitleFactory;
+use TitleFactory;
 use TuleapIntegration\TuleapConnection;
 use TuleapIntegration\TuleapResourceOwner;
 use TuleapIntegration\UserMappingProvider;
