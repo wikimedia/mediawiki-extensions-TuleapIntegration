@@ -1,10 +1,18 @@
+= TuleapIntegration 1.0.6 =
+
+This is a security and maintenance release of the TuleapIntegration 1.0 branch.
+
+=== Changes since TuleapIntegration 1.0.5 ===
+* Localisation updates.
+* ...
+
 = TuleapIntegration 1.0.5 =
 
 This is a security and maintenance release of the TuleapIntegration 1.0 branch.
 
 === Changes since TuleapIntegration 1.0.4 ===
 * Localisation updates.
-* ...
+* (Tuleap#35118) MediaWiki migration doesn't keep authors
 
 = TuleapIntegration 1.0.4 =
 
