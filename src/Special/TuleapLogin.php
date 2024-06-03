@@ -72,8 +72,8 @@ class TuleapLogin extends \SpecialPage {
 	public function execute( $subPage ) {
 		$this->setHeaders();
 		if ( $this->getUser()->isRegistered() ) {
-			$this->redirectToReturnTo();
 			$this->logger->debug( 'User already logged in' );
+			$this->redirectToReturnTo();
 			return true;
 		}
 
@@ -85,9 +85,9 @@ class TuleapLogin extends \SpecialPage {
 			$this->getRequest()->getVal( 'returnto' ),
 			$this->getRequest()->getBool( 'prompt' )
 		);
-		$this->getOutput()->redirect( $url );
-		$this->logger->debug( 'Redirect to Tuleap' );
 
+		$this->logger->debug( 'Redirect to Tuleap' );
+		$this->getOutput()->redirect( $url );
 		return true;
 	}
 
@@ -228,18 +228,25 @@ class TuleapLogin extends \SpecialPage {
 	 * After login, return to whatever user wanted to see
 	 */
 	private function redirectToReturnTo() {
-		if ( $this->getRequest()->getSession()->exists( 'returnto' ) ) {
+		$mainPageTitle = $this->titleFactory->newMainPage();
+		$returnTo = $mainPageTitle->getPrefixedDBkey();
+		if ( $this->getRequest()->getText( 'returnto' ) ) {
+			$returnTo = $this->getRequest()->getText( 'returnto' );
+		} elseif ( $this->getRequest()->getSession()->exists( 'returnto' ) ) {
 			$title = $this->titleFactory->newFromText(
 				$this->getRequest()->getSession()->get( 'returnto' )
 			);
-			if ( !( $title instanceof Title ) ) {
-				$this->redirectToMainPage();
-				return;
+			if ( $title instanceof Title ) {
+				$returnTo = $title->getPrefixedDBkey();
 			}
 			$this->getRequest()->getSession()->remove( 'returnto' );
 			$this->getRequest()->getSession()->save();
-			$this->getOutput()->redirect( $title->getFullURL() );
 		}
+		$title = $this->titleFactory->newFromText( $returnTo );
+		if ( !$title ) {
+			$title = $mainPageTitle;
+		}
+		$this->getOutput()->redirect( $title->getLocalURL() );
 	}
 
 	private function redirectToMainPage() {
