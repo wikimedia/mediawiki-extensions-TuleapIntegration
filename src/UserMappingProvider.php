@@ -32,7 +32,7 @@ class UserMappingProvider {
 	 */
 	public function provideUserForId( int $id ): ?User {
 		$db = $this->lb->getConnection( DB_REPLICA );
-		if ( !$db->tableExists( 'tuleap_user_mapping' ) ) {
+		if ( !$db->tableExists( 'tuleap_user_mapping', __METHOD__ ) ) {
 			$this->logger->info( 'Table `tuleap_user_mapping` does not exist' );
 			return null;
 		}
@@ -43,7 +43,8 @@ class UserMappingProvider {
 			],
 			[
 				'tum_user_id' => $id
-			]
+			],
+			__METHOD__
 		);
 
 		if ( !$row ) {
