@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Toliño"
+		]
+	},
+	"tuleapintegration-desc": "Integra MediaWiki en Tuleap",
+	"tuleap-login-error": "Erro de inicio de sesión",
+	"tuleap-login-error-desc": "Produciuse un erro ao intentar autenticarse con Tuleap. Ponte en contacto coa administración de Tuleap.",
+	"tuleap-login-button": "Iniciar sesión con Tuleap",
+	"tuleap-no-access": "Acceso rexeitado"
+}
