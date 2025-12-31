@@ -1,10 +1,13 @@
 {
 	"@metadata": {
 		"authors": [
-			"StarrySky"
+			"StarrySky",
+			"Peterxy12"
 		]
 	},
 	"tuleapintegration-desc": "将 MediaWiki 集成到 Tuleap",
 	"tuleap-login-error": "登录错误",
-	"tuleap-login-error-desc": "尝试对 Tuleap 进行身份验证时出错。 请联系 Tuleap 管理员"
+	"tuleap-login-error-desc": "尝试对 Tuleap 进行身份验证时出错。 请联系 Tuleap 管理员",
+	"tuleap-login-button": "使用Tuleap登录",
+	"tuleap-no-access": "拒绝访问"
 }
