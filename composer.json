@@ -9,7 +9,7 @@
 		"league/oauth2-client": "2.6.*",
 		"firebase/php-jwt": "v6.0.*",
 		"ext-sodium": "*",
-		"symfony/process": "~5"
+		"symfony/process": "~7"
 	},
 	"require-dev": {
 		"mediawiki/mediawiki-codesniffer": "48.0.0",
