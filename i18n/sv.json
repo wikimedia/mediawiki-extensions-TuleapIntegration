@@ -1,10 +1,13 @@
 {
 	"@metadata": {
 		"authors": [
-			"Sabelöga"
+			"Sabelöga",
+			"Stefan2255"
 		]
 	},
 	"tuleapintegration-desc": "Integrerar MediaWiki med Tuleap",
 	"tuleap-login-error": "Inloggningsproblem",
-	"tuleap-login-error-desc": "Ett fel inträffade vid auktorisering mot Tuleap. Var god kontakta en Tuleap-administratör"
+	"tuleap-login-error-desc": "Ett fel inträffade vid auktorisering mot Tuleap. Var god kontakta en Tuleap-administratör",
+	"tuleap-login-button": "Logga in med Tuleap",
+	"tuleap-no-access": "Åtkomst nekad"
 }
