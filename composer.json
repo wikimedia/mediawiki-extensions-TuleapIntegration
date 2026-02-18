@@ -7,7 +7,7 @@
 	"require": {
 		"composer/installers": "^1.0||^2.0",
 		"league/oauth2-client": "2.6.*",
-		"firebase/php-jwt": "v6.0.*",
+		"firebase/php-jwt": "^7.0.2",
 		"ext-sodium": "*",
 		"symfony/process": "~5"
 	},
