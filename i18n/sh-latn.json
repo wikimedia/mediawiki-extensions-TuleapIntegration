@@ -1,12 +1,13 @@
 {
 	"@metadata": {
 		"authors": [
-			"Winston Sung"
+			"Winston Sung",
+			"Aca"
 		]
 	},
 	"tuleapintegration-desc": "Uklapa MediaWiki u Tuleap",
 	"tuleap-login-error": "Greška pri prijavljivanju",
-	"tuleap-login-error-desc": "Došlo je do greške prilikom pokušaja autentifikacije u Tuleapu. Molimo kontaktirajte Tuleap administratora",
+	"tuleap-login-error-desc": "Došlo je do greške pri pokušaju autentifikacije u Tuleapu. Obratite se administratorima na Tuleapu.",
 	"tuleap-login-button": "Prijavite se koristeći Tuleap",
 	"tuleap-no-access": "Pristup onemogućen"
 }
