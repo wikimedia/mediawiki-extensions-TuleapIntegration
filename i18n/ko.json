@@ -1,10 +1,13 @@
 {
 	"@metadata": {
 		"authors": [
+			"Tensama0415",
 			"Ykhwong"
 		]
 	},
+	"tuleapintegration-desc": "미디어위키를 Tuleap에 통합",
 	"tuleap-login-error": "로그인 오류",
+	"tuleap-login-error-desc": "Tuleap에 대한 인증을 시도하는 도중에 오류가 발생했습니다. Tuleap 관리자에게 문의하세요.",
 	"tuleap-login-button": "Tuleap을 사용하여 로그인",
 	"tuleap-no-access": "접근이 거부됨"
 }
