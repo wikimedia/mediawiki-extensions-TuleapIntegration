@@ -16,7 +16,7 @@ use TuleapIntegration\UserMappingProvider;
 use UnexpectedValueException;
 use User;
 
-class TuleapLogin extends \SpecialPage {
+class TuleapLogin extends \UnlistedSpecialPage {
 	/**
 	 * @var string[]
 	 */
@@ -56,7 +56,7 @@ class TuleapLogin extends \SpecialPage {
 		UserOptionsManager $userOptionsManager, UserGroupManager $groupManager,
 		UserMappingProvider $userMappingProvider
 	) {
-		parent::__construct( 'TuleapLogin', '', false );
+		parent::__construct( 'TuleapLogin' );
 		$this->tuleap = $tuleap;
 		$this->titleFactory = $titleFactory;
 		$this->userFactory = $userFactory;
