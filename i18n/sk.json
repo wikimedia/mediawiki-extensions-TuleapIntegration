@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Wizzard"
+		]
+	},
+	"tuleapintegration-desc": "Integruje MediaWiki do Tuleapu",
+	"tuleap-login-error": "Chyba prihlásenia",
+	"tuleap-login-error-desc": "Pri pokuse o overenie voči Tuleapu nastala chyba. Obráťte sa, prosím, na správcu Tuleapu.",
+	"tuleap-login-button": "Prihlásiť sa cez Tuleap",
+	"tuleap-no-access": "Prístup zamietnutý"
+}
